@@ -42,7 +42,7 @@ IncludeScript("rocket_spawner/helper.nut");
   player_rocket.Kill();
 }
 
-::SpawnRocketAtEntityHoming <-  function(spawn_point_name, speed = null)
+::SpawnRocketAtEntityHoming <-  function(spawn_point_name, speed = null, damage = null)
 {
   local target = activator;
 
@@ -52,16 +52,16 @@ IncludeScript("rocket_spawner/helper.nut");
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
 
-  SpawnedRocket(position, angles, speed, null, true, target);
+  SpawnedRocket(position, angles, speed, damage, true, target);
 }
 
-::SpawnRocketAtEntity <-  function(spawn_point_name, speed_ = null)
+::SpawnRocketAtEntity <-  function(spawn_point_name, speed = null, damage = null)
 {
   local spawn_point = Entities.FindByName(null, spawn_point_name);
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
 
-  SpawnedRocket(position, angles, speed_, null, true);
+  SpawnedRocket(position, angles, speed, damage, true);
 }
 
 ::SetAttribute <- function(argument = null)
