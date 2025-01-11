@@ -95,5 +95,3 @@ IncludeScript("rocket_spawner/helper.nut");
 }
 
 setup()
-
-DeepPrintTable(SpawnedRocket)

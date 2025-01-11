@@ -62,31 +62,6 @@ function setup() {
 	}
 }
 
-::DeepPrintTable <- function( debugTable, prefix = "" )
-{
-	if (prefix == "")
-	{
-		printl(prefix + debugTable)
-		printl("{")
-		prefix = "   "
-	}
-	foreach (idx, val in debugTable)
-	{
-		if (typeof(val) == "table")
-		{
-			printl( prefix + idx + " = \n" + prefix + "{")
-			DeepPrintTable( val, prefix + "   " )
-			printl(prefix + "}")
-		}
-		else if (typeof(val) == "string")
-			printl(prefix + idx + "\t= \"" + val + "\"")
-		else
-			printl(prefix + idx + "\t= " + val)
-	}
-	if (prefix == "   ")
-		printl("}")
-}
-
 ::CalculateDirectionToPosition <- function(rocket_entity, position)
 {
   local vTemp = position - rocket_entity.GetOrigin();

@@ -85,7 +85,7 @@ Same as `ReplaceRocket`, but the rockets are homing.
 ```
 
 ## Filters
-To filter for normal rockets, add two `filter_activator_class`, a `filter_activator_name` and a `filter_multi`entity with these settings to you map:
+To filter for normal rockets, add two `filter_activator_class`, a `filter_activator_name` and two `filter_multi`entities with these settings to you map:
 
 #### first `filter_activator_class`
 ```
@@ -106,13 +106,19 @@ To filter for normal rockets, add two `filter_activator_class`, a `filter_activa
 | Filter Name | spawned_rocket            |
 ```
 The `Filter Name`will be red, this is normal.
-#### `filter_multi`
+#### first `filter_multi`
 ```
-| Name        | is_natural_rocket        |
+| Name        | is_rocket                |
 | Logic Type  | AND                      |
 | Filter 1    | is_stock_rocket          |
 | Filter 2    | is_cowmangler_rocket     |
-| Filter 3    | is_not_spawned           |
+```
+#### second `filter_multi`
+```
+| Name        | is_natural_rocket        |
+| Logic Type  | AND                      |
+| Filter 1    | is_rocket                |
+| Filter 2    | is_not_spawned           |
 ```
 ---
 Then, add the `is_natural_rocket` to any `trigger_multiple` or wherever you want to filter for normal rockets.

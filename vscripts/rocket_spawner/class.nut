@@ -167,18 +167,35 @@ class SpawnedRocket
 
     local timeToImpact = targetDistance / (speed + speed_increase);
     local feet_future_position = feet + targetHeading.Scale(targetSpeed * timeToImpact);
-    local under_feet_1_future_position = Vector(feet_future_position.x, feet_future_position.y, feet_future_position.z - bounds.z);
-    local under_feet_2_future_position = Vector(feet_future_position.x, feet_future_position.y, feet_future_position.z - (bounds.z / 2));
+
+    local under_feet_distance = bounds.z;
+
+		local trace_output =
+		{
+			start = feet,
+			end = feet - Vector(0.0, 0.0, 1.0) * under_feet_distance,
+      mask = 100679691,
+			ignore = target
+		}
+
+    TraceLineEx(trace_output)
+
+		if (trace_output.hit) {
+      under_feet_distance = trace_output.fraction * under_feet_distance;
+    }
+
+    local under_feet_1_future_position = Vector(feet_future_position.x, feet_future_position.y, feet_future_position.z - under_feet_distance);
+    local under_feet_2_future_position = Vector(feet_future_position.x, feet_future_position.y, feet_future_position.z - (under_feet_distance / 2));
 
     local futurePosition = 0;
 
     if (feet.z < rocket_entity.GetOrigin().z){
       futurePosition = under_feet_1_future_position;
     }
-    else if (targetDistance > bounds.z * 2){
+    else if (targetDistance > under_feet_distance * 2){
       futurePosition = under_feet_1_future_position;
     }
-    else if (targetDistance > bounds.z){
+    else if (targetDistance > under_feet_distance){
       futurePosition = under_feet_2_future_position;
     }
     else{
