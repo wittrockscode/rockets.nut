@@ -1,7 +1,7 @@
 # regen.nut
 
 VScript for spawning rockets that damage players.
-Place in `tf\scripts\vscripts` folder to get started.
+Place `vscripts` folder in `tf\scripts` folder to get started.
 Prefab with all necessary entities and examples is included (`rockets_prefab.vmf`).
 
 ## Using the script
