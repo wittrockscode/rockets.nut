@@ -93,7 +93,7 @@ class ROCKETS.SpawnedRocket
   {
     local particle_entity = SpawnEntityFromTable("info_particle_system", {
       start_active = false,
-      effect_name = "eyeboss_projectile"
+      effect_name = ROCKETS.GLOBAL_ATTRS.PARTICLE_SYSTEM_NAME
     });
 
     if (particle_entity == null) return;

@@ -2,7 +2,8 @@
   HELPERS = {},
   GLOBAL_ATTRS = {
     ROCKET_DAMAGE = 90.0,
-    ROCKET_SPEED = 1100
+    ROCKET_SPEED = 1100,
+    PARTICLE_SYSTEM_NAME = "critical_rocket_blue"
   },
   HOMING_ATTRS = {
     ROCKET_FOLLOW_SPEED_MULTIPLIER = 2.0,
@@ -109,7 +110,7 @@ function Precache()
   PrecacheEntityFromTable({
     classname = "info_particle_system",
     start_active = false,
-    effect_name = "eyeboss_projectile"
+    effect_name = ROCKETS.GLOBAL_ATTRS.PARTICLE_SYSTEM_NAME
   })
 
   PrecacheEntityFromTable({
