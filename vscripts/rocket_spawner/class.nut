@@ -1,4 +1,4 @@
-class SpawnedRocket
+class ROCKETS.SpawnedRocket
 {
   Entity      = null; // Entity
   Position    = null; // Vector
@@ -13,8 +13,8 @@ class SpawnedRocket
     this.Entity = Entities.CreateByClassname("tf_projectile_rocket");
     this.Position = position;
     this.Direction = direction;
-    this.Speed = (speed == null) ? GLOBAL_ATTRS.ROCKET_SPEED : speed;
-    this.Damage = (damage == null) ? GLOBAL_ATTRS.ROCKET_DAMAGE : damage;
+    this.Speed = (speed == null) ? ROCKETS.GLOBAL_ATTRS.ROCKET_SPEED : speed;
+    this.Damage = (damage == null) ? ROCKETS.GLOBAL_ATTRS.ROCKET_DAMAGE : damage;
     this.Explode = (explode == null) ? true : explode;
     this.Target = target;
 
@@ -29,12 +29,13 @@ class SpawnedRocket
     this.SetPropData("int", "m_iDeflected", 0);
     this.SetPropData("ent", "m_hOriginalLauncher", this.Entity);
     this.SetPropData("ent", "m_hLauncher", this.Entity);
+    this.SetPropData("string", "m_iName", "spawned_rocket");
 
     Entities.DispatchSpawn(this.Entity);
 
     this.SetPropData("int", "m_MoveType", 4);
     this.SetPropData("int", "m_nModelIndexOverrides", GetModelIndex("models/weapons/w_models/w_rocket.mdl"));
-    this.Entity.AcceptInput("targetname", "spawned_rocket", this.Entity, this.Entity);
+    this.SetPropData("int", "m_nNextThinkTick", -1);
 
     DoEntFire("!self", "Skin", "2", 0, null, this.Entity);
     AddParticles();
@@ -45,17 +46,24 @@ class SpawnedRocket
     {
       SetDestroyCallback(this.Entity, this.Damage, function(damage)
       {
-        CreateExplosion(self, damage);
+        ROCKETS.CreateExplosion(self, damage);
       })
     }
 
     if (this.Target)
     {
-      this.SetPropData("int", "m_nNextThinkTick", -1);
-
-      HookCustomThink(this.Entity, this.Target, this.Speed, "SPWNR_HomingRocketThink", function(target, speed)
+      local args = [this.Entity, this.Target, this.Speed];
+      ROCKETS.HELPERS.AddThinkFunc(this.Entity, args, "HomingRocketThink", function(target, speed)
       {
-        HomingRocketThink(self, target, speed);
+        ROCKETS.HomingRocketThink(args);
+      }, -1);
+    }
+    else
+    {
+      local args = [this.Entity];
+      ROCKETS.HELPERS.AddThinkFunc(this.Entity, args, "DefaultRocketThink", function(target, speed)
+      {
+        ROCKETS.DefaultRocketThink(args);
       }, -1);
     }
   }
@@ -72,6 +80,9 @@ class SpawnedRocket
         break;
       case "ent":
         NetProps.SetPropEntity(this.Entity, str, val);
+        break;
+      case "string":
+        NetProps.SetPropString(this.Entity, str, val);
         break;
       default:
         return;
@@ -128,87 +139,5 @@ class SpawnedRocket
         }
       })
     )
-  }
-}
-
-::HomingRocketThink <- function(rocket_entity, target, speed)
-{
-  if (!IsValidClient(target))
-  {
-    rocket_entity.Kill();
-
-    return;
-  }
-  else
-  {
-    local rocket_speed = 2.0;
-    local max_turnrate = 0.7;
-    local min_turnrate = 0.23;
-    local turnrate_max_distance = 50;
-    local turnrate_min_distance = 400;
-    local current_dir = rocket_entity.GetForwardVector();
-
-    local center = target.GetCenter();
-    local bounds = target.GetBoundingMaxs();
-    local feet = Vector(center.x, center.y, center.z - (bounds.z / 2));
-
-    local targetDistance = (feet - rocket_entity.GetOrigin()).Length();
-
-    local targetHeading = NormalizeVector(target.GetAbsVelocity());
-    local targetSpeed = target.GetAbsVelocity().Length();
-
-    local speedDiff = targetSpeed - speed;
-
-    local speed_increase = 0;
-
-    if (speed < targetSpeed * rocket_speed) {
-      speed_increase = targetSpeed * rocket_speed - speed;
-    }
-
-    local timeToImpact = targetDistance / (speed + speed_increase);
-    local feet_future_position = feet + targetHeading.Scale(targetSpeed * timeToImpact);
-
-    local under_feet_distance = bounds.z;
-
-		local trace_output =
-		{
-			start = feet,
-			end = feet - Vector(0.0, 0.0, 1.0) * under_feet_distance,
-      mask = 100679691,
-			ignore = target
-		}
-
-    TraceLineEx(trace_output)
-
-		if (trace_output.hit) {
-      under_feet_distance = trace_output.fraction * under_feet_distance;
-    }
-
-    local under_feet_1_future_position = Vector(feet_future_position.x, feet_future_position.y, feet_future_position.z - under_feet_distance);
-    local under_feet_2_future_position = Vector(feet_future_position.x, feet_future_position.y, feet_future_position.z - (under_feet_distance / 2));
-
-    local futurePosition = 0;
-
-    if (feet.z < rocket_entity.GetOrigin().z){
-      futurePosition = under_feet_1_future_position;
-    }
-    else if (targetDistance > under_feet_distance * 2){
-      futurePosition = under_feet_1_future_position;
-    }
-    else if (targetDistance > under_feet_distance){
-      futurePosition = under_feet_2_future_position;
-    }
-    else{
-      futurePosition = feet_future_position;
-    }
-
-    local percentage = ClampValue(RangePercentage(turnrate_max_distance, turnrate_min_distance, targetDistance), 0, 100);
-    local turnrate = RangeValue(max_turnrate, min_turnrate, percentage);
-
-    local target_dir = CalculateDirectionToPosition(rocket_entity, futurePosition);
-    local dir = LerpVectors(current_dir, target_dir, turnrate);
-
-    rocket_entity.SetAbsVelocity(dir.Scale(speed + speed_increase));
-    rocket_entity.SetForwardVector(dir);
   }
 }

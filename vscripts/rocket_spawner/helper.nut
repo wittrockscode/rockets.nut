@@ -1,56 +1,30 @@
-::HookCustomThink <-  function(hEntity, hTarget, hSpeed, strThinkFunc, funcCallback, fDelay = 0.1)
+function ROCKETS::HELPERS::AddThinkFunc(entity, args, name, func, delay = 0.1)
 {
-	if ((hEntity.GetScriptThinkFunc() != "") && (hEntity.GetScriptThinkFunc() != "CustomThink_"+strThinkFunc))
-	{
-		printl("Another think hook is active");
+  local entityScope = entity.GetScriptScope();
 
-		return;
+  if (!("ThinkClbs" in entityScope))
+    entityScope.ThinkClbs <- [];
+
+  entityScope.ThinkClbs.append(func);
+
+  entityScope["ThinkFuncs_"+name] <- function()
+	{
+    foreach (func in this.ThinkClbs)
+    {
+      func(self, args);
+    }
+    return delay;
 	}
 
-	local hEntityScope = hEntity.GetScriptScope();
-
-	if (!("ThinkHooks" in hEntityScope)) hEntityScope.ThinkHooks <- [];
-
-	if (hEntityScope.ThinkHooks.find(funcCallback) != null) { printl("Think callback already added"); return; }
-
-	hEntityScope.ThinkHooks.append(funcCallback);
-
-	if (!("CustomThink_"+strThinkFunc in hEntityScope)) hEntityScope["CustomThink_"+strThinkFunc] <- function()
-	{
-		foreach (iIndex, funcThinkCb in this.ThinkHooks)
-		{
-			funcThinkCb(hTarget, hSpeed);
-		}
-
-		return fDelay;
-	}
-
-	AddThinkToEnt(hEntity, "CustomThink_"+strThinkFunc);
+	AddThinkToEnt(entity, "ThinkFuncs_"+name);
 }
 
-::IsPlayerAlive <- function(client)
+function ROCKETS::HELPERS::IsPlayerAlive(client)
 {
 	return NetProps.GetPropInt(client, "m_lifeState") == 0;
 }
 
-function setup() {
-  PrecacheModel("models/weapons/w_models/w_rocket.mdl")
-  PrecacheEntityFromTable({
-    classname = "info_particle_system",
-    start_active = false,
-    effect_name = "eyeboss_projectile"
-  })
-
-  PrecacheEntityFromTable({
-    classname = "env_explosion",
-    spawnflags = 2,
-    rendermode = 5
-  });
-
-  printl("Precache complete")
-}
-
-::IsValidClient <- function(client)
+function ROCKETS::HELPERS::IsValidClient(client)
 {
 	try
 	{
@@ -62,7 +36,7 @@ function setup() {
 	}
 }
 
-::CalculateDirectionToPosition <- function(rocket_entity, position)
+function ROCKETS::HELPERS::CalculateDirectionToPosition(rocket_entity, position)
 {
   local vTemp = position - rocket_entity.GetOrigin();
   vTemp.Norm();
@@ -70,29 +44,29 @@ function setup() {
   return vTemp;
 }
 
-::LerpVectors <- function(vA, vB, t)
+function ROCKETS::HELPERS::LerpVectors(vA, vB, t)
 {
 	(t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
 
 	return vA + (vB - vA) * t;
 }
 
-::RangePercentage <- function(a, b, t)
+function ROCKETS::HELPERS::RangePercentage(a, b, t)
 {
   return ((t - a) * 100) / (b - a);
 }
 
-::RangeValue <- function(a, b, t)
+function ROCKETS::HELPERS::RangeValue(a, b, t)
 {
   return (t * (b - a) / 100) + a;
 }
 
-::ClampValue <- function(value, min, max)
+function ROCKETS::HELPERS::ClampValue(value, min, max)
 {
   return (value < min) ? min : (value > max) ? max : value;
 }
 
-::NormalizeVector <- function(vector)
+function ROCKETS::HELPERS::NormalizeVector(vector)
 {
   local length = vector.Length()
   if (length == 0.0) return vector
@@ -100,7 +74,7 @@ function setup() {
 }
 
 // https://developer.valvesoftware.com/wiki/Team_Fortress_2/Scripting/VScript_Examples#Creating_Bots_That_Use_the_Navmesh
-::VectorAngles <- function(forward)
+function ROCKETS::HELPERS::VectorAngles(forward)
 {
 	local yaw, pitch
 	if ( forward.y == 0.0 && forward.x == 0.0 )

@@ -1,50 +1,59 @@
+::ROCKETS <- {
+  HELPERS = {},
+  GLOBAL_ATTRS = {
+    ROCKET_DAMAGE = 90.0,
+    ROCKET_SPEED = 1100
+  },
+  HOMING_ATTRS = {
+    ROCKET_FOLLOW_SPEED_MULTIPLIER = 2.0,
+    MAX_TURNRATE = 0.7,
+    MIN_TURNRATE = 0.23,
+    MAX_TURNRATE_DISTANCE = 50,
+    MIN_TURNRATE_DISTANCE = 400
+  }
+};
+
 IncludeScript("rocket_spawner/class.nut");
 IncludeScript("rocket_spawner/rocket_functions.nut");
 IncludeScript("rocket_spawner/helper.nut");
 
-::ROCKET_SPAWNER <- {};
-
-::GLOBAL_ATTRS <- {
-  ROCKET_DAMAGE = 90.0,
-  ROCKET_SPEED = 1100
-};
-
-::ReplaceRocketHoming <- function(speed = null, damage = null)
+function ReplaceRocketHoming(target_entity_name = null, speed = null, damage = null)
 {
   local player_rocket = activator;
 
   if (player_rocket == null) return;
 
   local player_rocket_velocity = player_rocket.GetAbsVelocity() + player_rocket.GetBaseVelocity();
-  local player_rocket_angles = VectorAngles(player_rocket_velocity);
+  local player_rocket_angles = ROCKETS.HELPERS.VectorAngles(player_rocket_velocity);
   local player_rocket_speed = player_rocket_velocity.Length();
 
-  local target = player_rocket.GetOwner();
-  if (target == null) return;
+  local target_entity = target_entity_name == null ? player_rocket.GetOwner() : Entities.FindByName(null, target_entity_name);
 
-  SpawnedRocket(player_rocket.GetOrigin(), player_rocket_angles, speed ? speed : player_rocket_speed, damage, true, target);
+  if (target_entity == null) return;
+
+  ROCKETS.SpawnedRocket(player_rocket.GetOrigin(), player_rocket_angles, speed ? speed : player_rocket_speed, damage, true, target_entity);
 
   player_rocket.Kill();
 }
 
-::ReplaceRocket <-  function(speed = null, damage = null)
+function ReplaceRocket(speed = null, damage = null)
 {
   local player_rocket = activator;
 
   if (player_rocket == null) return;
 
   local player_rocket_velocity = player_rocket.GetAbsVelocity() + player_rocket.GetBaseVelocity();
-  local player_rocket_angles = VectorAngles(player_rocket_velocity);
+  local player_rocket_angles = ROCKETS.HELPERS.VectorAngles(player_rocket_velocity);
   local player_rocket_speed = player_rocket_velocity.Length();
 
-  SpawnedRocket(player_rocket.GetOrigin(), player_rocket_angles, speed ? speed : player_rocket_speed, damage, true);
+  ROCKETS.SpawnedRocket(player_rocket.GetOrigin(), player_rocket_angles, speed ? speed : player_rocket_speed, damage, true);
 
   player_rocket.Kill();
 }
 
-::SpawnRocketAtEntityHoming <-  function(spawn_point_name, speed = null, damage = null)
+function SpawnRocketAtEntityHoming(spawn_point_name, target_entity_name = null, speed = null, damage = null)
 {
-  local target = activator;
+  local target = target_entity_name == null ? activator : Entities.FindByName(null, target_entity_name);
 
   if (target == null) return;
 
@@ -52,19 +61,19 @@ IncludeScript("rocket_spawner/helper.nut");
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
 
-  SpawnedRocket(position, angles, speed, damage, true, target);
+  ROCKETS.SpawnedRocket(position, angles, speed, damage, true, target);
 }
 
-::SpawnRocketAtEntity <-  function(spawn_point_name, speed = null, damage = null)
+function SpawnRocketAtEntity(spawn_point_name, speed = null, damage = null)
 {
   local spawn_point = Entities.FindByName(null, spawn_point_name);
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
 
-  SpawnedRocket(position, angles, speed, damage, true);
+  ROCKETS.SpawnedRocket(position, angles, speed, damage, true);
 }
 
-::SetAttribute <- function(argument = null)
+function SetAttribute(argument = null)
 {
   if (argument == null)
   {
@@ -82,10 +91,10 @@ IncludeScript("rocket_spawner/helper.nut");
   switch(key)
 	{
 		case "rocket_damage" :
-			GLOBAL_ATTRS.ROCKET_DAMAGE <- value.tofloat();
+			ROCKETS.GLOBAL_ATTRS.ROCKET_DAMAGE <- value.tofloat();
 			break;
 		case "rocket_speed" :
-			GLOBAL_ATTRS.ROCKET_SPEED <- value.tofloat();
+			ROCKETS.GLOBAL_ATTRS.ROCKET_SPEED <- value.tofloat();
 			break;
     default:
       return;
@@ -94,4 +103,18 @@ IncludeScript("rocket_spawner/helper.nut");
   printl("Set " + key + " to " + value);
 }
 
-setup()
+function Precache()
+{
+  PrecacheModel("models/weapons/w_models/w_rocket.mdl")
+  PrecacheEntityFromTable({
+    classname = "info_particle_system",
+    start_active = false,
+    effect_name = "eyeboss_projectile"
+  })
+
+  PrecacheEntityFromTable({
+    classname = "env_explosion",
+    spawnflags = 2,
+    rendermode = 5
+  });
+}
