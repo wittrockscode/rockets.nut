@@ -1,15 +1,18 @@
-function ROCKETS::DefaultRocketThink(args)
+function ROCKETS::DefaultRocketThink(rocket)
 {
-  local rocket_entity = args[0];
+  local rocket_entity = rocket.Entity;
 
   rocket_entity.SetForwardVector(ROCKETS.HELPERS.NormalizeVector(rocket_entity.GetAbsVelocity()));
 }
 
-function ROCKETS::HomingRocketThink(args)
+function ROCKETS::HomingRocketThink(rocket)
 {
-  local rocket_entity = args[0];
-  local target = args[1];
-  local speed = args[2];
+  if (rocket == null) return;
+
+  local rocket_entity = rocket.Entity;
+  local target = rocket.Target;
+  local speed = rocket.Speed;
+  local follow_speed = rocket.FollowSpeed;
 
   if (!target.IsValid())
   {
@@ -30,9 +33,12 @@ function ROCKETS::HomingRocketThink(args)
     local targetSpeed = target.GetAbsVelocity().Length();
 
     local speedDiff = targetSpeed - speed;
-    local followSpeed = targetSpeed * ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER;
 
-    if (speed < followSpeed) speed = followSpeed;
+    if (follow_speed > 1.0 && speedDiff > 0) {
+      local followSpeed = targetSpeed * follow_speed;
+
+      if (speed < followSpeed) speed = followSpeed;
+    }
 
     local timeToImpact = targetDistance / speed;
     local targetPosBase_prediction = targetPosBase + targetHeading.Scale(targetSpeed * timeToImpact);
@@ -104,7 +110,7 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_fl
 
     local percentage = trace_output.fraction * 100;
     local turnrate = ROCKETS.HELPERS.RangeValue(ROCKETS.HOMING_ATTRS.MAX_TURNRATE, ROCKETS.HOMING_ATTRS.MIN_TURNRATE, percentage);
-    local target_direction = ROCKETS.HELPERS.NormalizeVector(current_dir + normal);
+    local target_direction = ROCKETS.HELPERS.NormalizeVector(current_dir + normal * 2);
 
     return ROCKETS.HELPERS.LerpVectors(current_dir, target_direction, turnrate);
   }else{
@@ -142,7 +148,7 @@ function ROCKETS::CreateExplosion(rocket, damage)
   if (explosion_entity == null) return;
 
   NetProps.SetPropInt(explosion_entity, "m_iMagnitude", damage);
-  NetProps.SetPropInt(explosion_entity, "m_iRadiusOverride", 100);
+  NetProps.SetPropInt(explosion_entity, "m_iRadiusOverride", ROCKETS.HELPERS.ClampValue(damage, 100, 1000));
 
   explosion_entity.Teleport(
     true, rocket.GetOrigin(),

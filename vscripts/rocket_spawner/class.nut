@@ -7,8 +7,10 @@ class ROCKETS.SpawnedRocket
   Damage      = null; // float
   Explode     = null; // bool
   Target      = null; // Entity
+  Scale       = null; // float
+  FollowSpeed = null; // float
 
-  constructor(position, direction, speed, damage, explode, target = null)
+  constructor(position, direction, speed, damage, explode, target, scale, follow_speed)
   {
     this.Entity = Entities.CreateByClassname("tf_projectile_rocket");
     this.Position = position;
@@ -17,6 +19,8 @@ class ROCKETS.SpawnedRocket
     this.Damage = (damage == null) ? ROCKETS.GLOBAL_ATTRS.ROCKET_DAMAGE : damage;
     this.Explode = (explode == null) ? true : explode;
     this.Target = target;
+    this.Scale = scale;
+    this.FollowSpeed = follow_speed;
 
     this.Entity.Teleport(
       true, this.Position,
@@ -33,11 +37,15 @@ class ROCKETS.SpawnedRocket
 
     Entities.DispatchSpawn(this.Entity);
 
+    this.SetPropData("int", "m_CollisionGroup", 24);
+
     this.SetPropData("int", "m_MoveType", 4);
     this.SetPropData("int", "m_nModelIndexOverrides", GetModelIndex("models/weapons/w_models/w_rocket.mdl"));
     this.SetPropData("int", "m_nNextThinkTick", -1);
 
-    DoEntFire("!self", "Skin", "2", 0, null, this.Entity);
+    this.SetPropData("float", "m_flModelScale", this.Scale);
+    this.Entity.SetSize(ROCKETS.GLOBAL_ATTRS.ROCKET_BOUNDS_P * this.Scale * -1, ROCKETS.GLOBAL_ATTRS.ROCKET_BOUNDS_P * this.Scale);
+
     AddParticles();
 
     this.Entity.SetAbsVelocity(this.Direction.Forward() * this.Speed);
@@ -52,18 +60,16 @@ class ROCKETS.SpawnedRocket
 
     if (this.Target)
     {
-      local args = [this.Entity, this.Target, this.Speed];
-      ROCKETS.HELPERS.AddThinkFunc(this.Entity, args, "HomingRocketThink", function(target, speed)
+      ROCKETS.HELPERS.AddThinkFunc(this.Entity, this, "HomingRocketThink", function(rocket)
       {
-        ROCKETS.HomingRocketThink(args);
+        ROCKETS.HomingRocketThink(rocket);
       }, -1);
     }
     else
     {
-      local args = [this.Entity];
-      ROCKETS.HELPERS.AddThinkFunc(this.Entity, args, "DefaultRocketThink", function(target, speed)
+      ROCKETS.HELPERS.AddThinkFunc(this.Entity, this, "DefaultRocketThink", function(rocket)
       {
-        ROCKETS.DefaultRocketThink(args);
+        ROCKETS.DefaultRocketThink(rocket);
       }, -1);
     }
   }

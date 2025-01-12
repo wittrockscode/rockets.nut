@@ -1,4 +1,4 @@
-function ROCKETS::HELPERS::AddThinkFunc(entity, args, name, func, delay = 0.1)
+function ROCKETS::HELPERS::AddThinkFunc(entity, rocket, name, func, delay = 0.1)
 {
   local entityScope = entity.GetScriptScope();
 
@@ -11,7 +11,7 @@ function ROCKETS::HELPERS::AddThinkFunc(entity, args, name, func, delay = 0.1)
 	{
     foreach (func in this.ThinkClbs)
     {
-      func(self, args);
+      func(rocket);
     }
     return delay;
 	}
@@ -46,7 +46,7 @@ function ROCKETS::HELPERS::CalculateDirectionToPosition(rocket_entity, position)
 
 function ROCKETS::HELPERS::LerpVectors(vA, vB, t)
 {
-	(t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
+	t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
 
 	return vA + (vB - vA) * t;
 }

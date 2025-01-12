@@ -3,10 +3,11 @@
   GLOBAL_ATTRS = {
     ROCKET_DAMAGE = 90.0,
     ROCKET_SPEED = 1100,
-    PARTICLE_SYSTEM_NAME = "critical_rocket_blue"
+    PARTICLE_SYSTEM_NAME = "critical_rocket_blue",
+    ROCKET_BOUNDS_P = Vector(18.3205, 3.417, 3.417)
   },
   HOMING_ATTRS = {
-    ROCKET_FOLLOW_SPEED_MULTIPLIER = 2.0,
+    ROCKET_FOLLOW_SPEED_MULTIPLIER = 1.5,
     MAX_TURNRATE = 0.7,
     MIN_TURNRATE = 0.23,
     MAX_TURNRATE_DISTANCE = 50,
@@ -18,8 +19,13 @@ IncludeScript("rocket_spawner/class.nut");
 IncludeScript("rocket_spawner/rocket_functions.nut");
 IncludeScript("rocket_spawner/helper.nut");
 
-function ReplaceRocketHoming(target_entity_name = null, speed = null, damage = null)
-{
+function ReplaceRocketHoming(
+  target_entity_name = null,
+  speed = null,
+  damage = null,
+  scale = 1.0,
+  follow_speed = ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
+){
   local player_rocket = activator;
 
   if (player_rocket == null) return;
@@ -32,13 +38,26 @@ function ReplaceRocketHoming(target_entity_name = null, speed = null, damage = n
 
   if (target_entity == null) return;
 
-  ROCKETS.SpawnedRocket(player_rocket.GetOrigin(), player_rocket_angles, speed ? speed : player_rocket_speed, damage, true, target_entity);
+  ROCKETS.SpawnedRocket(
+    player_rocket.GetOrigin(),
+    player_rocket_angles,
+    speed ? speed : player_rocket_speed,
+    damage,
+    true,
+    target_entity,
+    scale,
+    follow_speed
+  );
 
   player_rocket.Kill();
 }
 
-function ReplaceRocket(speed = null, damage = null)
-{
+function ReplaceRocket(
+  speed = null,
+  damage = null,
+  scale = 1.0,
+  follow_speed = ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
+){
   local player_rocket = activator;
 
   if (player_rocket == null) return;
@@ -47,13 +66,28 @@ function ReplaceRocket(speed = null, damage = null)
   local player_rocket_angles = ROCKETS.HELPERS.VectorAngles(player_rocket_velocity);
   local player_rocket_speed = player_rocket_velocity.Length();
 
-  ROCKETS.SpawnedRocket(player_rocket.GetOrigin(), player_rocket_angles, speed ? speed : player_rocket_speed, damage, true);
+  ROCKETS.SpawnedRocket(
+    player_rocket.GetOrigin(),
+    player_rocket_angles,
+    speed ? speed : player_rocket_speed,
+    damage,
+    true,
+    null,
+    scale,
+    follow_speed
+  );
 
   player_rocket.Kill();
 }
 
-function SpawnRocketAtEntityHoming(spawn_point_name, target_entity_name = null, speed = null, damage = null)
-{
+function SpawnRocketAtEntityHoming(
+  spawn_point_name,
+  target_entity_name = null,
+  speed = null,
+  damage = null,
+  scale = 1.0,
+  follow_speed = ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
+){
   local target = target_entity_name == null ? activator : Entities.FindByName(null, target_entity_name);
 
   if (target == null) return;
@@ -62,16 +96,39 @@ function SpawnRocketAtEntityHoming(spawn_point_name, target_entity_name = null, 
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
 
-  ROCKETS.SpawnedRocket(position, angles, speed, damage, true, target);
+  ROCKETS.SpawnedRocket(
+    position,
+    angles,
+    speed,
+    damage,
+    true,
+    target,
+    scale,
+    follow_speed
+  );
 }
 
-function SpawnRocketAtEntity(spawn_point_name, speed = null, damage = null)
-{
+function SpawnRocketAtEntity(
+  spawn_point_name,
+  speed = null,
+  damage = null,
+  scale = 1.0,
+  follow_speed = ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
+){
   local spawn_point = Entities.FindByName(null, spawn_point_name);
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
 
-  ROCKETS.SpawnedRocket(position, angles, speed, damage, true);
+  ROCKETS.SpawnedRocket(
+    position,
+    angles,
+    speed,
+    damage,
+    true,
+    null,
+    scale,
+    follow_speed
+  );
 }
 
 function SetAttribute(argument = null)

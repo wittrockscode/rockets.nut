@@ -29,6 +29,8 @@ Spawn a rocket at the location of an entity.
 | spawn_point_name | string | yes      |
 | speed            | float  | no       |
 | damage           | float  | no       |
+| scale            | float  | no       |
+| follow_speed     | float  | no       |
 ```
 #### Usage
 
@@ -50,7 +52,9 @@ Replaces a user fired rocket.
 | name             | type   | required |
 |------------------|--------|----------|
 | speed            | float  | no       |
-| speed            | float  | no       |
+| damage           | float  | no       |
+| scale            | float  | no       |
+| follow_speed     | float  | no       |
 ```
 #### Usage
 
@@ -74,6 +78,8 @@ Set `target_entity_name` to `null` to select the `!activator` as the target.
 | target_entity_name | string | no       |
 | speed              | float  | no       |
 | damage             | float  | no       |
+| scale              | float  | no       |
+| follow_speed       | float  | no       |
 ```
 ### ReplaceRocketHoming
 Same as `ReplaceRocket`, but the rockets are homing.
@@ -85,6 +91,8 @@ Set `target_entity_name` to `null` to select the `!activator` as the target.
 | target_entity_name | string | no       |
 | speed              | float  | no       |
 | speed              | float  | no       |
+| scale              | float  | no       |
+| follow_speed       | float  | no       |
 ```
 
 ## Filters
