@@ -65,23 +65,26 @@ You can use this in combination with a `trigger_push` to reflect rockets back to
 
 ### SpawnRocketAtEntityHoming
 Same as `SpawnRocketAtEntity`, but the rockets are homing.
-Be careful when triggering this function with anything else than a `func_button`, since the `!activator` needs to be the player that the rockets home in on.
+Set `target_entity_name` to `null` to select the `!activator` as the target.
 #### Arguments
 ```
-| name             | type   | required |
-|------------------|--------|----------|
-| spawn_point_name | string | yes      |
-| speed            | float  | no       |
-| damage           | float  | no       |
+| name               | type   | required |
+|--------------------|--------|----------|
+| spawn_point_name   | string | yes      |
+| target_entity_name | string | no       |
+| speed              | float  | no       |
+| damage             | float  | no       |
 ```
 ### ReplaceRocketHoming
 Same as `ReplaceRocket`, but the rockets are homing.
+Set `target_entity_name` to `null` to select the `!activator` as the target.
 #### Arguments
 ```
-| name             | type   | required |
-|------------------|--------|----------|
-| speed            | float  | no       |
-| speed            | float  | no       |
+| name               | type   | required |
+|--------------------|--------|----------|
+| target_entity_name | string | no       |
+| speed              | float  | no       |
+| speed              | float  | no       |
 ```
 
 ## Filters
