@@ -70,11 +70,11 @@ function ROCKETS::HomingRocketThink(rocket)
     }
 
     local percentage = ROCKETS.HELPERS.ClampValue(
-      ROCKETS.HELPERS.RangePercentage(ROCKETS.HOMING_ATTRS.MAX_TURNRATE_DISTANCE, ROCKETS.HOMING_ATTRS.MIN_TURNRATE_DISTANCE, targetDistance),
+      ROCKETS.HELPERS.RangePercentage(ROCKETS.GLOBAL_ATTRS.MAX_TURNRATE_DISTANCE, ROCKETS.GLOBAL_ATTRS.MIN_TURNRATE_DISTANCE, targetDistance),
       0,
       100
     );
-    local turnrate = ROCKETS.HELPERS.RangeValue(ROCKETS.HOMING_ATTRS.MAX_TURNRATE, ROCKETS.HOMING_ATTRS.MIN_TURNRATE, percentage);
+    local turnrate = ROCKETS.HELPERS.RangeValue(ROCKETS.GLOBAL_ATTRS.MAX_TURNRATE, ROCKETS.GLOBAL_ATTRS.MIN_TURNRATE, percentage);
 
     local target_direction = ROCKETS.HELPERS.CalculateDirectionToPosition(rocket_entity, futurePosition);
     local final_direction = ROCKETS.HELPERS.LerpVectors(current_dir, target_direction, turnrate);
@@ -109,7 +109,7 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_fl
     scope.last_normal = normal;
 
     local percentage = trace_output.fraction * 100;
-    local turnrate = ROCKETS.HELPERS.RangeValue(ROCKETS.HOMING_ATTRS.MAX_TURNRATE, ROCKETS.HOMING_ATTRS.MIN_TURNRATE, percentage);
+    local turnrate = ROCKETS.HELPERS.RangeValue(ROCKETS.GLOBAL_ATTRS.MAX_TURNRATE, ROCKETS.GLOBAL_ATTRS.MIN_TURNRATE, percentage);
     local target_direction = ROCKETS.HELPERS.NormalizeVector(current_dir + normal * 2);
 
     return ROCKETS.HELPERS.LerpVectors(current_dir, target_direction, turnrate);

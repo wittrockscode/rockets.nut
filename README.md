@@ -16,6 +16,19 @@ You can set defaults for rocket damage and rocket speed either by editing the `r
 | OnTimer   | script        | RunScriptCode | SetAttribute()                    | 0.01  |
 ```
 
+Attributes you can set with a timer:
+
+| Name | Default |
+|--|--|
+| ROCKET_DAMAGE   | 90.0 |
+| ROCKET_SPEED  | 1100 |
+| PARTICLE_SYSTEM_NAME | "critical_rocket_blue" |
+| ROCKET_BOUNDS_P | Vector(18.3205, 3.417, 3.417) |
+| ROCKET_FOLLOW_SPEED_MULTIPLIER | 1.5 |
+| MAX_TURNRATE | 0.7 |
+| MIN_TURNRATE | 0.23 |
+| MAX_TURNRATE_DISTANCE | 50 |
+| MIN_TURNRATE_DISTANCE | 400 |
 
 ## Funtions
 

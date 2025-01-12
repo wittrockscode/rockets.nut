@@ -4,9 +4,7 @@
     ROCKET_DAMAGE = 90.0,
     ROCKET_SPEED = 1100,
     PARTICLE_SYSTEM_NAME = "critical_rocket_blue",
-    ROCKET_BOUNDS_P = Vector(18.3205, 3.417, 3.417)
-  },
-  HOMING_ATTRS = {
+    ROCKET_BOUNDS_P = Vector(18.3205, 3.417, 3.417),
     ROCKET_FOLLOW_SPEED_MULTIPLIER = 1.5,
     MAX_TURNRATE = 0.7,
     MIN_TURNRATE = 0.23,
@@ -24,7 +22,7 @@ function ReplaceRocketHoming(
   speed = null,
   damage = null,
   scale = 1.0,
-  follow_speed = ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
+  follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
 ){
   local player_rocket = activator;
 
@@ -56,7 +54,7 @@ function ReplaceRocket(
   speed = null,
   damage = null,
   scale = 1.0,
-  follow_speed = ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
+  follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
 ){
   local player_rocket = activator;
 
@@ -86,7 +84,7 @@ function SpawnRocketAtEntityHoming(
   speed = null,
   damage = null,
   scale = 1.0,
-  follow_speed = ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
+  follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
 ){
   local target = target_entity_name == null ? activator : Entities.FindByName(null, target_entity_name);
 
@@ -113,7 +111,7 @@ function SpawnRocketAtEntity(
   speed = null,
   damage = null,
   scale = 1.0,
-  follow_speed = ROCKETS.HOMING_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
+  follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
 ){
   local spawn_point = Entities.FindByName(null, spawn_point_name);
   local position = spawn_point.GetOrigin();
@@ -140,23 +138,17 @@ function SetAttribute(argument = null)
     return;
   }
 
-  local key_value = split(argument, "=");
+  local argument_uppercase = argument.toupper();
+
+  local key_value = split(argument_uppercase, "=");
   if (key_value.len() != 2) return;
 
   local key = key_value[0];
   local value = key_value[1];
 
-  switch(key)
-	{
-		case "rocket_damage" :
-			ROCKETS.GLOBAL_ATTRS.ROCKET_DAMAGE <- value.tofloat();
-			break;
-		case "rocket_speed" :
-			ROCKETS.GLOBAL_ATTRS.ROCKET_SPEED <- value.tofloat();
-			break;
-    default:
-      return;
-	}
+  if (ROCKETS.GLOBAL_ATTRS[key] == null) return;
+
+  ROCKETS.GLOBAL_ATTRS[key] = value;
 
   printl("Set " + key + " to " + value);
 }
