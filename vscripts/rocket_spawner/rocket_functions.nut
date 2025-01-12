@@ -73,14 +73,14 @@ function ROCKETS::HomingRocketThink(args)
     local target_direction = ROCKETS.HELPERS.CalculateDirectionToPosition(rocket_entity, futurePosition);
     local final_direction = ROCKETS.HELPERS.LerpVectors(current_dir, target_direction, turnrate);
 
-    final_direction = ROCKETS.RocketCollision(rocket_entity, final_direction);
+    final_direction = ROCKETS.RocketCollision(rocket_entity, final_direction, trace_output.hit);
 
     rocket_entity.SetAbsVelocity(final_direction.Scale(speed));
     rocket_entity.SetForwardVector(final_direction);
   }
 }
 
-function ROCKETS::RocketCollision(rocket_entity, current_direction)
+function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_floor)
 {
   rocket_entity.ValidateScriptScope();
   local scope = rocket_entity.GetScriptScope();
@@ -98,7 +98,7 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction)
 
   if(trace_output.hit) {
     local normal = trace_output.plane_normal;
-    if (normal.z > 0.5) return current_direction;
+    if (not_check_floor && normal.z > 0.5) return current_direction;
 
     scope.last_normal = normal;
 
