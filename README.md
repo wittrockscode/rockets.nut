@@ -69,7 +69,7 @@ You can use this in combination with a `trigger_push` to reflect rockets back to
 
 ### SpawnRocketAtEntityHoming
 Same as `SpawnRocketAtEntity`, but the rockets are homing.
-Set `target_entity_name` to `null` to select the `!activator` as the target.
+Set `target_entity_name` to `null` or leave it blank to select the `!activator` as the target.
 #### Arguments
 ```
 | name               | type   | required |
@@ -83,7 +83,7 @@ Set `target_entity_name` to `null` to select the `!activator` as the target.
 ```
 ### ReplaceRocketHoming
 Same as `ReplaceRocket`, but the rockets are homing.
-Set `target_entity_name` to `null` to select the `!activator` as the target.
+Set `target_entity_name` to `null` or leave it blank to select the `!activator` as the target.
 #### Arguments
 ```
 | name               | type   | required |
