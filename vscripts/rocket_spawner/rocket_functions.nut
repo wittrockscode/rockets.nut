@@ -1,41 +1,32 @@
-function ROCKETS::DefaultRocketThink(rocket)
-{
+function ROCKETS::DefaultRocketThink(rocket) {
   local rocket_entity = rocket.Entity;
 
   rocket_entity.SetForwardVector(ROCKETS.HELPERS.NormalizeVector(rocket_entity.GetAbsVelocity()));
 }
 
-function ROCKETS::HomingRocketThink(rocket)
-{
+function ROCKETS::HomingRocketThink(rocket) {
   if (rocket == null) return;
 
   local rocket_entity = rocket.Entity;
   local target = rocket.Target;
-  local speed = rocket.Speed;
-  local follow_speed = rocket.FollowSpeed;
+  local speed = rocket.BaseSpeed;
+  local follow_speed_multiplier = rocket.FollowSpeedMultiplier;
 
-  if (!target.IsValid())
-  {
+  if (!target.IsValid()) {
     rocket_entity.Kill();
-
     return;
-  }
-  else
-  {
+  } else {
     local current_dir = rocket_entity.GetForwardVector();
-
     local center = target.GetCenter();
     local bounds = target.GetBoundingMaxs();
     local targetPosBase = Vector(center.x, center.y, center.z - (bounds.z / 2));
-
     local targetDistance = (targetPosBase - rocket_entity.GetOrigin()).Length();
     local targetHeading = ROCKETS.HELPERS.NormalizeVector(target.GetAbsVelocity());
     local targetSpeed = target.GetAbsVelocity().Length();
-
     local speedDiff = targetSpeed - speed;
 
-    if (follow_speed > 1.0 && speedDiff > 0) {
-      local followSpeed = targetSpeed * follow_speed;
+    if (follow_speed_multiplier > 1.0 && speedDiff > 0) {
+      local followSpeed = targetSpeed * follow_speed_multiplier;
 
       if (speed < followSpeed) speed = followSpeed;
     }
@@ -50,22 +41,17 @@ function ROCKETS::HomingRocketThink(rocket)
       mask = 100679691,
 			ignore = target
 		};
-
     TraceLineEx(trace_output);
 
 		if (trace_output.hit) z_offset_distance = trace_output.fraction * z_offset_distance;
 
     local preferredTargetPosLow = Vector(targetPosBase_prediction.x, targetPosBase_prediction.y, targetPosBase_prediction.z - z_offset_distance);
     local preferredTargetPosHigh = Vector(targetPosBase_prediction.x, targetPosBase_prediction.y, targetPosBase_prediction.z - (z_offset_distance / 2));
-
     local futurePosition = targetPosBase_prediction;
 
-    if ((targetPosBase.z < rocket_entity.GetOrigin().z) || (targetDistance > z_offset_distance * 2))
-    {
+    if ((targetPosBase.z < rocket_entity.GetOrigin().z) || (targetDistance > z_offset_distance * 2)) {
       futurePosition = preferredTargetPosLow;
-    }
-    else if (targetDistance > z_offset_distance)
-    {
+    } else if (targetDistance > z_offset_distance) {
       futurePosition = preferredTargetPosHigh;
     }
 
@@ -75,7 +61,6 @@ function ROCKETS::HomingRocketThink(rocket)
       100
     );
     local turnrate = ROCKETS.HELPERS.RangeValue(ROCKETS.GLOBAL_ATTRS.MAX_TURNRATE, ROCKETS.GLOBAL_ATTRS.MIN_TURNRATE, percentage);
-
     local target_direction = ROCKETS.HELPERS.CalculateDirectionToPosition(rocket_entity, futurePosition);
     local final_direction = ROCKETS.HELPERS.LerpVectors(current_dir, target_direction, turnrate);
 
@@ -86,8 +71,7 @@ function ROCKETS::HomingRocketThink(rocket)
   }
 }
 
-function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_floor)
-{
+function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_floor) {
   rocket_entity.ValidateScriptScope();
   local scope = rocket_entity.GetScriptScope();
   local current_dir = rocket_entity.GetForwardVector();
@@ -99,7 +83,6 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_fl
     mask = 67125259,
     ignore = rocket_entity
   };
-
   TraceLineEx(trace_output);
 
   if(trace_output.hit) {
@@ -113,7 +96,7 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_fl
     local target_direction = ROCKETS.HELPERS.NormalizeVector(current_dir + normal * 2);
 
     return ROCKETS.HELPERS.LerpVectors(current_dir, target_direction, turnrate);
-  }else{
+  } else {
     if (scope.last_normal != null) {
       local last_normal_inverted = scope.last_normal * -1;
 
@@ -123,7 +106,6 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_fl
         mask = 67125259,
         ignore = rocket_entity
       };
-
       TraceLineEx(trace_output2);
 
       if (!trace_output2.hit) {
@@ -138,13 +120,11 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_fl
   }
 }
 
-function ROCKETS::CreateExplosion(rocket, damage)
-{
+function ROCKETS::CreateExplosion(rocket, damage) {
   local explosion_entity = SpawnEntityFromTable("env_explosion", {
     spawnflags = 2,
     rendermode = 5
   });
-
   if (explosion_entity == null) return;
 
   NetProps.SetPropInt(explosion_entity, "m_iMagnitude", damage);

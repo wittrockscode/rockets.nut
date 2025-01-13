@@ -1,5 +1,4 @@
 ::ROCKETS <- {
-  HELPERS = {},
   GLOBAL_ATTRS = {
     ROCKET_DAMAGE = 90.0,
     ROCKET_SPEED = 1100,
@@ -10,7 +9,7 @@
     MIN_TURNRATE = 0.23,
     MAX_TURNRATE_DISTANCE = 50,
     MIN_TURNRATE_DISTANCE = 400
-  }
+  },
 };
 
 IncludeScript("rocket_spawner/class.nut");
@@ -23,15 +22,13 @@ function ReplaceRocketHoming(
   damage = null,
   scale = 1.0,
   follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
-){
+) {
   local player_rocket = activator;
-
   if (player_rocket == null) return;
 
   local player_rocket_velocity = player_rocket.GetAbsVelocity() + player_rocket.GetBaseVelocity();
   local player_rocket_angles = ROCKETS.HELPERS.VectorAngles(player_rocket_velocity);
   local player_rocket_speed = player_rocket_velocity.Length();
-
   local target_entity = target_entity_name == null ? player_rocket.GetOwner() : Entities.FindByName(null, target_entity_name);
 
   if (target_entity == null) return;
@@ -55,9 +52,8 @@ function ReplaceRocket(
   damage = null,
   scale = 1.0,
   follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
-){
+) {
   local player_rocket = activator;
-
   if (player_rocket == null) return;
 
   local player_rocket_velocity = player_rocket.GetAbsVelocity() + player_rocket.GetBaseVelocity();
@@ -85,9 +81,8 @@ function SpawnRocketAtEntityHoming(
   damage = null,
   scale = 1.0,
   follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
-){
+) {
   local target = target_entity_name == null ? activator : Entities.FindByName(null, target_entity_name);
-
   if (target == null) return;
 
   local spawn_point = Entities.FindByName(null, spawn_point_name);
@@ -112,7 +107,7 @@ function SpawnRocketAtEntity(
   damage = null,
   scale = 1.0,
   follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
-){
+) {
   local spawn_point = Entities.FindByName(null, spawn_point_name);
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
@@ -129,39 +124,32 @@ function SpawnRocketAtEntity(
   );
 }
 
-function SetAttribute(argument = null)
-{
-  if (argument == null)
-  {
+function SetAttribute(argument = null) {
+  if (argument == null) {
     activator.AcceptInput("Disable", "", activator, activator);
     printl("All attributes set");
     return;
   }
 
   local argument_uppercase = argument.toupper();
-
   local key_value = split(argument_uppercase, "=");
   if (key_value.len() != 2) return;
 
   local key = key_value[0];
   local value = key_value[1];
-
   if (ROCKETS.GLOBAL_ATTRS[key] == null) return;
 
   ROCKETS.GLOBAL_ATTRS[key] = value;
-
   printl("Set " + key + " to " + value);
 }
 
-function Precache()
-{
+function Precache() {
   PrecacheModel("models/weapons/w_models/w_rocket.mdl")
   PrecacheEntityFromTable({
     classname = "info_particle_system",
     start_active = false,
     effect_name = ROCKETS.GLOBAL_ATTRS.PARTICLE_SYSTEM_NAME
   })
-
   PrecacheEntityFromTable({
     classname = "env_explosion",
     spawnflags = 2,

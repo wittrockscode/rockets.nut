@@ -1,16 +1,11 @@
-function ROCKETS::HELPERS::AddThinkFunc(entity, rocket, name, func, delay = 0.1)
-{
+function ROCKETS::HELPERS::AddThinkFunc(entity, rocket, name, func, delay = 0.1) {
   local entityScope = entity.GetScriptScope();
 
-  if (!("ThinkClbs" in entityScope))
-    entityScope.ThinkClbs <- [];
+  if (!("ThinkClbs" in entityScope)) entityScope.ThinkClbs <- [];
 
   entityScope.ThinkClbs.append(func);
-
-  entityScope["ThinkFuncs_"+name] <- function()
-	{
-    foreach (func in this.ThinkClbs)
-    {
+  entityScope["ThinkFuncs_"+name] <- function() {
+    foreach (func in this.ThinkClbs) {
       func(rocket);
     }
     return delay;
@@ -19,63 +14,51 @@ function ROCKETS::HELPERS::AddThinkFunc(entity, rocket, name, func, delay = 0.1)
 	AddThinkToEnt(entity, "ThinkFuncs_"+name);
 }
 
-function ROCKETS::HELPERS::IsPlayerAlive(client)
-{
+function ROCKETS::HELPERS::IsPlayerAlive(client) {
 	return NetProps.GetPropInt(client, "m_lifeState") == 0;
 }
 
-function ROCKETS::HELPERS::IsValidClient(client)
-{
-	try
-	{
+function ROCKETS::HELPERS::IsValidClient(client) {
+	try {
 		return client != null && client.IsValid() && client.IsPlayer() && IsPlayerAlive(client);
-	}
-	catch(e)
-	{
+	} catch(e) {
 		return false;
 	}
 }
 
-function ROCKETS::HELPERS::CalculateDirectionToPosition(rocket_entity, position)
-{
+function ROCKETS::HELPERS::CalculateDirectionToPosition(rocket_entity, position) {
   local vTemp = position - rocket_entity.GetOrigin();
   vTemp.Norm();
 
   return vTemp;
 }
 
-function ROCKETS::HELPERS::LerpVectors(vA, vB, t)
-{
+function ROCKETS::HELPERS::LerpVectors(vA, vB, t) {
 	t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
 
 	return vA + (vB - vA) * t;
 }
 
-function ROCKETS::HELPERS::RangePercentage(a, b, t)
-{
+function ROCKETS::HELPERS::RangePercentage(a, b, t) {
   return ((t - a) * 100) / (b - a);
 }
 
-function ROCKETS::HELPERS::RangeValue(a, b, t)
-{
+function ROCKETS::HELPERS::RangeValue(a, b, t) {
   return (t * (b - a) / 100) + a;
 }
 
-function ROCKETS::HELPERS::ClampValue(value, min, max)
-{
+function ROCKETS::HELPERS::ClampValue(value, min, max) {
   return (value < min) ? min : (value > max) ? max : value;
 }
 
-function ROCKETS::HELPERS::NormalizeVector(vector)
-{
-  local length = vector.Length()
-  if (length == 0.0) return vector
-  return Vector(vector.x / length, vector.y / length, vector.z / length)
+function ROCKETS::HELPERS::NormalizeVector(vector) {
+  local length = vector.Length();
+  if (length == 0.0) return vector;
+  return Vector(vector.x / length, vector.y / length, vector.z / length);
 }
 
 // https://developer.valvesoftware.com/wiki/Team_Fortress_2/Scripting/VScript_Examples#Creating_Bots_That_Use_the_Navmesh
-function ROCKETS::HELPERS::VectorAngles(forward)
-{
+function ROCKETS::HELPERS::VectorAngles(forward) {
 	local yaw, pitch
 	if ( forward.y == 0.0 && forward.x == 0.0 )
 	{
