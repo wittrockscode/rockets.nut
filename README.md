@@ -20,9 +20,12 @@ Attributes you can set:
 |--|--|
 | ROCKET_DAMAGE   | 90.0 |
 | ROCKET_SPEED  | 1100 |
+| ROCKET_COLLISION_AVOIDANCE | true |
+| ROCKET_TARGET_PREDICTION | true |
 | PARTICLE_SYSTEM_NAME | "critical_rocket_blue" |
 | ROCKET_BOUNDS_P | Vector(18.3205, 3.417, 3.417) |
-| ROCKET_FOLLOW_SPEED_MULTIPLIER | 1.5 |
+| ROCKET_FOLLOW_SPEED_MULTIPLIER | 2 |
+| ROCKET_EXPLODE | true |
 | MAX_TURNRATE | 0.7 |
 | MIN_TURNRATE | 0.23 |
 | MAX_TURNRATE_DISTANCE | 50 |
@@ -39,7 +42,8 @@ All functions have an optional parameter `parameters`, where you can set the pro
 | target | string |
 | scale | float |
 | follow_speed_multiplier | float |
-| collision_avoidance | float |
+| collision_avoidance | bool |
+| target_prediction | bool |
 
 You can set these by using this structure in your function call:
 ```

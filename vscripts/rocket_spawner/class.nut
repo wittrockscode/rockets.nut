@@ -9,6 +9,7 @@ class ROCKETS.SpawnedRocket {
   Scale                   = null; // float
   FollowSpeedMultiplier   = null; // float
   CollisionAvoidance      = null; // bool
+  TargetPrediction        = null; // bool
 
   constructor(args) {
     this.Entity                 = Entities.CreateByClassname("tf_projectile_rocket");
@@ -21,6 +22,7 @@ class ROCKETS.SpawnedRocket {
     this.Scale                  = args.scale;
     this.FollowSpeedMultiplier  = args.follow_speed_multiplier;
     this.CollisionAvoidance     = args.collision_avoidance;
+    this.TargetPrediction       = args.target_prediction;
 
     args = null;
 

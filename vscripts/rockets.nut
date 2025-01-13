@@ -1,34 +1,4 @@
-::ROCKETS <- {};
-ROCKETS.Helpers <- {};
-ROCKETS.Globals <- {
-  ROCKET_DAMAGE                   = 90.0,
-  ROCKET_SPEED                    = 1100.0,
-  ROCKET_COLLISION_AVOIDANCE      = true,
-  PARTICLE_SYSTEM_NAME            = "critical_rocket_blue",
-  ROCKET_BOUNDS_P                 = Vector(18.3205, 3.417, 3.417),
-  ROCKET_FOLLOW_SPEED_MULTIPLIER  = 2,
-  ROCKET_EXPLODE                  = true,
-  ROCKET_MODEL_SCALE              = 1.0,
-  MAX_TURNRATE                    = 0.7,
-  MIN_TURNRATE                    = 0.23,
-  MAX_TURNRATE_DISTANCE           = 50,
-  MIN_TURNRATE_DISTANCE           = 400,
-};
-ROCKETS.RocketArgs <- {
-  position                = null,
-  direction               = null,
-  speed                   = null,
-  damage                  = null,
-  explode                 = null,
-  target                  = null,
-  scale                   = null,
-  follow_speed_multiplier = null,
-  collision_avoidance     = null,
-};
-
-IncludeScript("rocket_spawner/class.nut");
-IncludeScript("rocket_spawner/rocket_functions.nut");
-IncludeScript("rocket_spawner/helper.nut");
+IncludeScript("rocket_spawner/defines.nut");
 
 function ReplaceRocketHoming(args_table = {}) {
   local args = ROCKETS.Helpers.PopulateArgs(args_table);
@@ -115,12 +85,12 @@ function SetAttributes(args_table = {}) {
 }
 
 function Precache() {
-  PrecacheModel("models/weapons/w_models/w_rocket.mdl")
+  PrecacheModel("models/weapons/w_models/w_rocket.mdl");
   PrecacheEntityFromTable({
     classname = "info_particle_system",
     start_active = false,
     effect_name = ROCKETS.Globals.PARTICLE_SYSTEM_NAME
-  })
+  });
   PrecacheEntityFromTable({
     classname = "env_explosion",
     spawnflags = 2,

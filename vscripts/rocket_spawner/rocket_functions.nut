@@ -12,6 +12,7 @@ function ROCKETS::HomingRocketThink(rocket) {
   local speed = rocket.BaseSpeed;
   local follow_speed_multiplier = rocket.FollowSpeedMultiplier;
   local collision_avoidance = rocket.CollisionAvoidance;
+  local target_prediction = rocket.TargetPrediction;
 
   if (!target.IsValid()) {
     rocket_entity.Kill();
@@ -32,28 +33,33 @@ function ROCKETS::HomingRocketThink(rocket) {
       if (speed < followSpeed) speed = followSpeed;
     }
 
-    local timeToImpact = targetDistance / speed;
-    local targetPosBase_prediction = targetPosBase + targetHeading.Scale(targetSpeed * timeToImpact);
-    local z_offset_distance = bounds.z;
+    local targetPos = targetPosBase;
 
-		local trace_output = {
-			start = targetPosBase,
-			end = targetPosBase - Vector(0.0, 0.0, 1.0) * z_offset_distance,
-      mask = 100679691,
-			ignore = target
-		};
-    TraceLineEx(trace_output);
+    if (target_prediction) {
+      local timeToImpact = targetDistance / speed;
+      local targetPosBase_prediction = targetPosBase + targetHeading.Scale(targetSpeed * timeToImpact);
+      local z_offset_distance = bounds.z;
 
-		if (trace_output.hit) z_offset_distance = trace_output.fraction * z_offset_distance;
+      local trace_output = {
+        start = targetPosBase,
+        end = targetPosBase - Vector(0.0, 0.0, 1.0) * z_offset_distance,
+        mask = 100679691,
+        ignore = target
+      };
+      TraceLineEx(trace_output);
 
-    local preferredTargetPosLow = Vector(targetPosBase_prediction.x, targetPosBase_prediction.y, targetPosBase_prediction.z - z_offset_distance);
-    local preferredTargetPosHigh = Vector(targetPosBase_prediction.x, targetPosBase_prediction.y, targetPosBase_prediction.z - (z_offset_distance / 2));
-    local futurePosition = targetPosBase_prediction;
+      if (trace_output.hit) z_offset_distance = trace_output.fraction * z_offset_distance;
 
-    if ((targetPosBase.z < rocket_entity.GetOrigin().z) || (targetDistance > z_offset_distance * 2)) {
-      futurePosition = preferredTargetPosLow;
-    } else if (targetDistance > z_offset_distance) {
-      futurePosition = preferredTargetPosHigh;
+      local preferredTargetPosLow = Vector(targetPosBase_prediction.x, targetPosBase_prediction.y, targetPosBase_prediction.z - z_offset_distance);
+      local preferredTargetPosHigh = Vector(targetPosBase_prediction.x, targetPosBase_prediction.y, targetPosBase_prediction.z - (z_offset_distance / 2));
+
+      if ((targetPosBase.z < rocket_entity.GetOrigin().z) || (targetDistance > z_offset_distance * 2)) {
+        targetPosBase_prediction = preferredTargetPosLow;
+      } else if (targetDistance > z_offset_distance) {
+        targetPosBase_prediction = preferredTargetPosHigh;
+      }
+
+      targetPos = targetPosBase_prediction;
     }
 
     local percentage = ROCKETS.Helpers.ClampValue(
@@ -62,7 +68,7 @@ function ROCKETS::HomingRocketThink(rocket) {
       100
     );
     local turnrate = ROCKETS.Helpers.RangeValue(ROCKETS.Globals.MAX_TURNRATE, ROCKETS.Globals.MIN_TURNRATE, percentage);
-    local target_direction = ROCKETS.Helpers.CalculateDirectionToPosition(rocket_entity, futurePosition);
+    local target_direction = ROCKETS.Helpers.CalculateDirectionToPosition(rocket_entity, targetPos);
     local final_direction = ROCKETS.Helpers.LerpVectors(current_dir, target_direction, turnrate);
 
     if (collision_avoidance) {

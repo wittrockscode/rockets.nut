@@ -17,13 +17,6 @@ function ROCKETS::Helpers::AddThinkFunc(entity, rocket, name, func, delay = 0.1)
 function ROCKETS::Helpers::PopulateArgs(input_table) {
   local args = clone ROCKETS.RocketArgs;
 
-  args.damage                   = ROCKETS.Globals.ROCKET_DAMAGE;
-  args.speed                    = ROCKETS.Globals.ROCKET_SPEED;
-  args.explode                  = ROCKETS.Globals.ROCKET_EXPLODE;
-  args.scale                    = ROCKETS.Globals.ROCKET_MODEL_SCALE;
-  args.follow_speed_multiplier  = ROCKETS.Globals.ROCKET_FOLLOW_SPEED_MULTIPLIER;
-  args.collision_avoidance      = ROCKETS.Globals.ROCKET_COLLISION_AVOIDANCE;
-
   foreach (key, value in input_table) {
     if (key in args) args[key] <- value;
   }
