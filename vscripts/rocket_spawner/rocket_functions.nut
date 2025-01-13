@@ -34,6 +34,7 @@ function ROCKETS::HomingRocketThink(rocket) {
     }
 
     local targetPos = targetPosBase;
+    local dontCheckFloor = false;
 
     if (target_prediction) {
       local timeToImpact = targetDistance / speed;
@@ -48,15 +49,19 @@ function ROCKETS::HomingRocketThink(rocket) {
       };
       TraceLineEx(trace_output);
 
+      dontCheckFloor = trace_output.hit;
+
       if (trace_output.hit) z_offset_distance = trace_output.fraction * z_offset_distance;
 
       local preferredTargetPosLow = Vector(targetPosBase_prediction.x, targetPosBase_prediction.y, targetPosBase_prediction.z - z_offset_distance);
       local preferredTargetPosHigh = Vector(targetPosBase_prediction.x, targetPosBase_prediction.y, targetPosBase_prediction.z - (z_offset_distance / 2));
 
-      if ((targetPosBase.z < rocket_entity.GetOrigin().z) || (targetDistance > z_offset_distance * 2)) {
+      if (((targetPosBase.z < rocket_entity.GetOrigin().z) || (targetDistance > z_offset_distance * 2)) && rocket_entity.GetOrigin().z < preferredTargetPosLow.z) {
         targetPosBase_prediction = preferredTargetPosLow;
-      } else if (targetDistance > z_offset_distance) {
+      } else if ((targetDistance > z_offset_distance) && rocket_entity.GetOrigin().z < preferredTargetPosHigh.z) {
         targetPosBase_prediction = preferredTargetPosHigh;
+      } else if (targetDistance < z_offset_distance / 2) {
+        targetPosBase_prediction = targetPosBase;
       }
 
       targetPos = targetPosBase_prediction;
@@ -72,7 +77,7 @@ function ROCKETS::HomingRocketThink(rocket) {
     local final_direction = ROCKETS.Helpers.LerpVectors(current_dir, target_direction, turnrate);
 
     if (collision_avoidance) {
-      final_direction = ROCKETS.RocketCollision(rocket_entity, final_direction, trace_output.hit);
+      final_direction = ROCKETS.RocketCollision(rocket_entity, final_direction, dontCheckFloor);
     }
 
     rocket_entity.SetAbsVelocity(final_direction.Scale(speed));
@@ -80,7 +85,7 @@ function ROCKETS::HomingRocketThink(rocket) {
   }
 }
 
-function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_floor) {
+function ROCKETS::RocketCollision(rocket_entity, current_direction, dont_check_floor) {
   rocket_entity.ValidateScriptScope();
   local scope = rocket_entity.GetScriptScope();
   local current_dir = rocket_entity.GetForwardVector();
@@ -96,7 +101,7 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_fl
 
   if(trace_output.hit) {
     local normal = trace_output.plane_normal;
-    if (not_check_floor && normal.z > 0.5) return current_direction;
+    if (dont_check_floor && normal.z > 0.5) return current_direction;
 
     scope.last_normal = normal;
 
