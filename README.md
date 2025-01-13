@@ -43,7 +43,7 @@ All functions have an optional parameter `parameters`, where you can set the pro
 
 You can set these by using this structure in your function call:
 ```
-SpawnRocketAtEntityHoming(`spawn_entity_name`, {target=`target_entity_name`,damage=90.0,speed=1100.0,explode=false)
+SpawnRocketAtEntityHoming(`spawn_entity_name`, {target=`target_entity_name`,damage=90.0,speed=1100.0,explode=false})
 ```
 *Note: To use strings in parameters, you have to use backticks (`).*
 
