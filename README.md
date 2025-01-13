@@ -7,16 +7,14 @@ Prefab with all necessary entities and examples is included (`rockets_prefab.vmf
 ## Using the script
 
 To use the script in a map, add a `logic_script` entity with the Entity Scripts field set to `rockets.nut` and with the name field set to `script`.
-You can set defaults for rocket damage and rocket speed either by editing the `rockets.nut` file, or by adding a `logic_timer` entity with the following outputs to your map:
+You can set defaults for rocket damage and rocket speed either by editing the `rockets.nut` file, or by adding a `logic_timer` entity with the following outputs to your map (add the attributes you want to set to the function parameters):
 ```
-| My Output | Target Entity | Target Input  | Parameter                         | Delay |
-|-----------|---------------|---------------|-----------------------------------|-------|
-| OnTimer   | script        | RunScriptCode | SetAttribute(`rocket_damage=90`)  | 0.00  |
-| OnTimer   | script        | RunScriptCode | SetAttribute(`rocket_speed=1100`) | 0.00  |
-| OnTimer   | script        | RunScriptCode | SetAttribute()                    | 0.01  |
+| My Output | Target Entity | Target Input  | Parameter                                           | Delay |
+|-----------|---------------|---------------|------------------------------------------------------|-------|
+| OnTimer   | script        | RunScriptCode | SetAttributes({rocket_damage=90,rocket_speed=1100})  | 0.00  |
 ```
-
-Attributes you can set with a timer:
+Rockets will use these values if you don't specify them in the spawn functions.
+Attributes you can set:
 
 | Name | Default |
 |--|--|
@@ -32,18 +30,32 @@ Attributes you can set with a timer:
 
 ## Funtions
 
+All functions have an optional parameter `parameters`, where you can set the properties of the rocket:
+| Name | Type |
+|--|--|
+| speed | float |
+| damage | float |
+| explode | bool |
+| target | string |
+| scale | float |
+| follow_speed_multiplier | float |
+| collision_avoidance | float |
+
+You can set these by using this structure in your function call:
+``SpawnRocketAtEntityHoming(`spawn_entity_name`, {target=`target_entity_name`,damage=90.0,speed=1100.0,explode=false)``
+*Note: To use strings in parameters, you have to use backticks (`).*
+
+Omitting the `target` parameter when spawning a homing rocket sets the `!activator` as the target.
+
 ###  SpawnRocketAtEntity
-Spawn a rocket at the location of an entity.
+Spawns a rocket at the location of an entity.
 
 #### Arguments
 ```
 | name             | type   | required |
 |------------------|--------|----------|
 | spawn_point_name | string | yes      |
-| speed            | float  | no       |
-| damage           | float  | no       |
-| scale            | float  | no       |
-| follow_speed     | float  | no       |
+| parameters       | table  | no       |
 ```
 #### Usage
 
@@ -55,7 +67,16 @@ Fill it with this output:
 |-----------|---------------|---------------|---------------------------------|-------|
 | OnPressed | script        | RunScriptCode | SpawnRocketAtEntity(`rocket1`)  | 0.00  |
 ```
-If you want to change the speed or the damage of the rocket, use ``SpawnRocketAtEntity(`rocket1`, 1400, 110)`` for example.
+
+### SpawnRocketAtEntityHoming
+Same as `SpawnRocketAtEntity`, but the rockets are homing.
+#### Arguments
+```
+| name               | type   | required |
+|--------------------|--------|----------|
+| spawn_point_name   | string | yes      |
+| parameters         | table  | no       |
+```
 
 ### ReplaceRocket
 
@@ -64,10 +85,7 @@ Replaces a user fired rocket.
 ```
 | name             | type   | required |
 |------------------|--------|----------|
-| speed            | float  | no       |
-| damage           | float  | no       |
-| scale            | float  | no       |
-| follow_speed     | float  | no       |
+| parameters       | table  | no       |
 ```
 #### Usage
 
@@ -80,32 +98,13 @@ Add this output:
 ```
 You can use this in combination with a `trigger_push` to reflect rockets back to the player that damage him.
 
-### SpawnRocketAtEntityHoming
-Same as `SpawnRocketAtEntity`, but the rockets are homing.
-Set `target_entity_name` to `null` or leave it blank to select the `!activator` as the target.
-#### Arguments
-```
-| name               | type   | required |
-|--------------------|--------|----------|
-| spawn_point_name   | string | yes      |
-| target_entity_name | string | no       |
-| speed              | float  | no       |
-| damage             | float  | no       |
-| scale              | float  | no       |
-| follow_speed       | float  | no       |
-```
 ### ReplaceRocketHoming
 Same as `ReplaceRocket`, but the rockets are homing.
-Set `target_entity_name` to `null` or leave it blank to select the `!activator` as the target.
 #### Arguments
 ```
 | name               | type   | required |
 |--------------------|--------|----------|
-| target_entity_name | string | no       |
-| speed              | float  | no       |
-| speed              | float  | no       |
-| scale              | float  | no       |
-| follow_speed       | float  | no       |
+| parameters         | table  | no       |
 ```
 
 ## Filters
