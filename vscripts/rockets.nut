@@ -1,146 +1,117 @@
-::ROCKETS <- {
-  GLOBAL_ATTRS = {
-    ROCKET_DAMAGE = 90.0,
-    ROCKET_SPEED = 1100,
-    PARTICLE_SYSTEM_NAME = "critical_rocket_blue",
-    ROCKET_BOUNDS_P = Vector(18.3205, 3.417, 3.417),
-    ROCKET_FOLLOW_SPEED_MULTIPLIER = 1.5,
-    MAX_TURNRATE = 0.7,
-    MIN_TURNRATE = 0.23,
-    MAX_TURNRATE_DISTANCE = 50,
-    MIN_TURNRATE_DISTANCE = 400
-  },
+::ROCKETS <- {};
+ROCKETS.Helpers <- {};
+ROCKETS.Globals <- {
+  ROCKET_DAMAGE                   = 90.0,
+  ROCKET_SPEED                    = 1100.0,
+  ROCKET_COLLISION_AVOIDANCE      = true,
+  PARTICLE_SYSTEM_NAME            = "critical_rocket_blue",
+  ROCKET_BOUNDS_P                 = Vector(18.3205, 3.417, 3.417),
+  ROCKET_FOLLOW_SPEED_MULTIPLIER  = 2,
+  ROCKET_EXPLODE                  = true,
+  ROCKET_MODEL_SCALE              = 1.0,
+  MAX_TURNRATE                    = 0.7,
+  MIN_TURNRATE                    = 0.23,
+  MAX_TURNRATE_DISTANCE           = 50,
+  MIN_TURNRATE_DISTANCE           = 400,
+};
+ROCKETS.RocketArgs <- {
+  position                = null,
+  direction               = null,
+  speed                   = null,
+  damage                  = null,
+  explode                 = null,
+  target                  = null,
+  scale                   = null,
+  follow_speed_multiplier = null,
+  collision_avoidance     = null,
 };
 
 IncludeScript("rocket_spawner/class.nut");
 IncludeScript("rocket_spawner/rocket_functions.nut");
 IncludeScript("rocket_spawner/helper.nut");
 
-function ReplaceRocketHoming(
-  target_entity_name = null,
-  speed = null,
-  damage = null,
-  scale = 1.0,
-  follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
-) {
+function ReplaceRocketHoming(args_table = {}) {
+  local args = ROCKETS.Helpers.PopulateArgs(args_table);
+
   local player_rocket = activator;
   if (player_rocket == null) return;
 
   local player_rocket_velocity = player_rocket.GetAbsVelocity() + player_rocket.GetBaseVelocity();
-  local player_rocket_angles = ROCKETS.HELPERS.VectorAngles(player_rocket_velocity);
+  local player_rocket_angles = ROCKETS.Helpers.VectorAngles(player_rocket_velocity);
   local player_rocket_speed = player_rocket_velocity.Length();
-  local target_entity = target_entity_name == null ? player_rocket.GetOwner() : Entities.FindByName(null, target_entity_name);
 
-  if (target_entity == null) return;
+  args.target = args.target == null ? player_rocket.GetOwner() : Entities.FindByName(null, args.target);
+  if (args.target == null) return;
 
-  ROCKETS.SpawnedRocket(
-    player_rocket.GetOrigin(),
-    player_rocket_angles,
-    speed ? speed : player_rocket_speed,
-    damage,
-    true,
-    target_entity,
-    scale,
-    follow_speed
-  );
+  args.position = player_rocket.GetOrigin();
+  args.direction = player_rocket_angles;
+  args.speed = args.speed ? args.speed : player_rocket_speed;
+
+  ROCKETS.SpawnedRocket(args);
 
   player_rocket.Kill();
 }
 
-function ReplaceRocket(
-  speed = null,
-  damage = null,
-  scale = 1.0,
-  follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
-) {
+function ReplaceRocket(args_table = {}) {
+  local args = ROCKETS.Helpers.PopulateArgs(args_table);
+
   local player_rocket = activator;
   if (player_rocket == null) return;
 
   local player_rocket_velocity = player_rocket.GetAbsVelocity() + player_rocket.GetBaseVelocity();
-  local player_rocket_angles = ROCKETS.HELPERS.VectorAngles(player_rocket_velocity);
+  local player_rocket_angles = ROCKETS.Helpers.VectorAngles(player_rocket_velocity);
   local player_rocket_speed = player_rocket_velocity.Length();
 
-  ROCKETS.SpawnedRocket(
-    player_rocket.GetOrigin(),
-    player_rocket_angles,
-    speed ? speed : player_rocket_speed,
-    damage,
-    true,
-    null,
-    scale,
-    follow_speed
-  );
+  args.position = player_rocket.GetOrigin();
+  args.direction = player_rocket_angles;
+  args.speed = args.speed ? args.speed : player_rocket_speed;
+  args.target = null;
+
+  ROCKETS.SpawnedRocket(args);
 
   player_rocket.Kill();
 }
 
-function SpawnRocketAtEntityHoming(
-  spawn_point_name,
-  target_entity_name = null,
-  speed = null,
-  damage = null,
-  scale = 1.0,
-  follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
-) {
-  local target = target_entity_name == null ? activator : Entities.FindByName(null, target_entity_name);
-  if (target == null) return;
+function SpawnRocketAtEntityHoming(spawn_point_name, args_table = {}) {
+  local args = ROCKETS.Helpers.PopulateArgs(args_table);
+
+  args.target = args.target == null ? activator : Entities.FindByName(null, args.target);
+  if (args.target == null) return;
 
   local spawn_point = Entities.FindByName(null, spawn_point_name);
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
 
-  ROCKETS.SpawnedRocket(
-    position,
-    angles,
-    speed,
-    damage,
-    true,
-    target,
-    scale,
-    follow_speed
-  );
+  args.position = position;
+  args.direction = angles;
+
+  ROCKETS.SpawnedRocket(args);
 }
 
-function SpawnRocketAtEntity(
-  spawn_point_name,
-  speed = null,
-  damage = null,
-  scale = 1.0,
-  follow_speed = ROCKETS.GLOBAL_ATTRS.ROCKET_FOLLOW_SPEED_MULTIPLIER
-) {
+function SpawnRocketAtEntity(spawn_point_name, args_table = {}) {
   local spawn_point = Entities.FindByName(null, spawn_point_name);
   local position = spawn_point.GetOrigin();
   local angles = spawn_point.GetAbsAngles();
 
-  ROCKETS.SpawnedRocket(
-    position,
-    angles,
-    speed,
-    damage,
-    true,
-    null,
-    scale,
-    follow_speed
-  );
+  local args = ROCKETS.Helpers.PopulateArgs(args_table);
+  args.position = position;
+  args.direction = angles;
+  args.target = null;
+
+  ROCKETS.SpawnedRocket(args);
 }
 
-function SetAttribute(argument = null) {
-  if (argument == null) {
-    activator.AcceptInput("Disable", "", activator, activator);
-    printl("All attributes set");
-    return;
+function SetAttributes(args_table = {}) {
+  foreach (key, value in args_table) {
+    local key = key.toupper();
+    if (key in ROCKETS.Globals) {
+      ROCKETS.Globals[key] = value;
+      printl(key + " set to " + value);
+    }
   }
 
-  local argument_uppercase = argument.toupper();
-  local key_value = split(argument_uppercase, "=");
-  if (key_value.len() != 2) return;
-
-  local key = key_value[0];
-  local value = key_value[1];
-  if (ROCKETS.GLOBAL_ATTRS[key] == null) return;
-
-  ROCKETS.GLOBAL_ATTRS[key] = value;
-  printl("Set " + key + " to " + value);
+  activator.AcceptInput("Disable", "", activator, activator);
+  printl("All attributes set");
 }
 
 function Precache() {
@@ -148,7 +119,7 @@ function Precache() {
   PrecacheEntityFromTable({
     classname = "info_particle_system",
     start_active = false,
-    effect_name = ROCKETS.GLOBAL_ATTRS.PARTICLE_SYSTEM_NAME
+    effect_name = ROCKETS.Globals.PARTICLE_SYSTEM_NAME
   })
   PrecacheEntityFromTable({
     classname = "env_explosion",

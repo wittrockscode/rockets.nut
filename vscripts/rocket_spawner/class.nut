@@ -8,17 +8,21 @@ class ROCKETS.SpawnedRocket {
   Target                  = null; // Entity
   Scale                   = null; // float
   FollowSpeedMultiplier   = null; // float
+  CollisionAvoidance      = null; // bool
 
-  constructor(position, direction, speed, damage, explode, target, scale, follow_speed) {
-    this.Entity = Entities.CreateByClassname("tf_projectile_rocket");
-    this.Position = position;
-    this.Direction = direction;
-    this.BaseSpeed = (speed == null) ? ROCKETS.GLOBAL_ATTRS.ROCKET_SPEED : speed;
-    this.Damage = (damage == null) ? ROCKETS.GLOBAL_ATTRS.ROCKET_DAMAGE : damage;
-    this.Explode = (explode == null) ? true : explode;
-    this.Target = target;
-    this.Scale = scale;
-    this.FollowSpeedMultiplier = follow_speed;
+  constructor(args) {
+    this.Entity                 = Entities.CreateByClassname("tf_projectile_rocket");
+    this.Position               = args.position;
+    this.Direction              = args.direction;
+    this.BaseSpeed              = args.speed;
+    this.Damage                 = args.damage;
+    this.Explode                = args.explode;
+    this.Target                 = args.target;
+    this.Scale                  = args.scale;
+    this.FollowSpeedMultiplier  = args.follow_speed_multiplier;
+    this.CollisionAvoidance     = args.collision_avoidance;
+
+    args = null;
 
     this.Entity.Teleport(
       true, this.Position,
@@ -39,7 +43,7 @@ class ROCKETS.SpawnedRocket {
     this.SetPropData("float", "m_flModelScale", this.Scale);
 
     Entities.DispatchSpawn(this.Entity);
-    this.Entity.SetSize(ROCKETS.GLOBAL_ATTRS.ROCKET_BOUNDS_P * this.Scale * -1, ROCKETS.GLOBAL_ATTRS.ROCKET_BOUNDS_P * this.Scale);
+    this.Entity.SetSize(ROCKETS.Globals.ROCKET_BOUNDS_P * this.Scale * -1, ROCKETS.Globals.ROCKET_BOUNDS_P * this.Scale);
     this.Entity.SetAbsVelocity(this.Direction.Forward() * this.BaseSpeed);
     AddCustomParticle();
 
@@ -50,11 +54,11 @@ class ROCKETS.SpawnedRocket {
     }
 
     if (this.Target) {
-      ROCKETS.HELPERS.AddThinkFunc(this.Entity, this, "HomingRocketThink", function(rocket) {
+      ROCKETS.Helpers.AddThinkFunc(this.Entity, this, "HomingRocketThink", function(rocket) {
         ROCKETS.HomingRocketThink(rocket);
       }, -1);
     } else {
-      ROCKETS.HELPERS.AddThinkFunc(this.Entity, this, "DefaultRocketThink", function(rocket) {
+      ROCKETS.Helpers.AddThinkFunc(this.Entity, this, "DefaultRocketThink", function(rocket) {
         ROCKETS.DefaultRocketThink(rocket);
       }, -1);
     }
@@ -82,7 +86,7 @@ class ROCKETS.SpawnedRocket {
   function AddCustomParticle() {
     local particle_entity = SpawnEntityFromTable("info_particle_system", {
       start_active = false,
-      effect_name = ROCKETS.GLOBAL_ATTRS.PARTICLE_SYSTEM_NAME
+      effect_name = ROCKETS.Globals.PARTICLE_SYSTEM_NAME
     });
 
     if (particle_entity == null) return;

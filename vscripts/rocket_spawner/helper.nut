@@ -1,4 +1,4 @@
-function ROCKETS::HELPERS::AddThinkFunc(entity, rocket, name, func, delay = 0.1) {
+function ROCKETS::Helpers::AddThinkFunc(entity, rocket, name, func, delay = 0.1) {
   local entityScope = entity.GetScriptScope();
 
   if (!("ThinkClbs" in entityScope)) entityScope.ThinkClbs <- [];
@@ -14,11 +14,28 @@ function ROCKETS::HELPERS::AddThinkFunc(entity, rocket, name, func, delay = 0.1)
 	AddThinkToEnt(entity, "ThinkFuncs_"+name);
 }
 
-function ROCKETS::HELPERS::IsPlayerAlive(client) {
+function ROCKETS::Helpers::PopulateArgs(input_table) {
+  local args = clone ROCKETS.RocketArgs;
+
+  args.damage                   = ROCKETS.Globals.ROCKET_DAMAGE;
+  args.speed                    = ROCKETS.Globals.ROCKET_SPEED;
+  args.explode                  = ROCKETS.Globals.ROCKET_EXPLODE;
+  args.scale                    = ROCKETS.Globals.ROCKET_MODEL_SCALE;
+  args.follow_speed_multiplier  = ROCKETS.Globals.ROCKET_FOLLOW_SPEED_MULTIPLIER;
+  args.collision_avoidance      = ROCKETS.Globals.ROCKET_COLLISION_AVOIDANCE;
+
+  foreach (key, value in input_table) {
+    if (key in args) args[key] <- value;
+  }
+
+  return args;
+}
+
+function ROCKETS::Helpers::IsPlayerAlive(client) {
 	return NetProps.GetPropInt(client, "m_lifeState") == 0;
 }
 
-function ROCKETS::HELPERS::IsValidClient(client) {
+function ROCKETS::Helpers::IsValidClient(client) {
 	try {
 		return client != null && client.IsValid() && client.IsPlayer() && IsPlayerAlive(client);
 	} catch(e) {
@@ -26,39 +43,39 @@ function ROCKETS::HELPERS::IsValidClient(client) {
 	}
 }
 
-function ROCKETS::HELPERS::CalculateDirectionToPosition(rocket_entity, position) {
+function ROCKETS::Helpers::CalculateDirectionToPosition(rocket_entity, position) {
   local vTemp = position - rocket_entity.GetOrigin();
   vTemp.Norm();
 
   return vTemp;
 }
 
-function ROCKETS::HELPERS::LerpVectors(vA, vB, t) {
+function ROCKETS::Helpers::LerpVectors(vA, vB, t) {
 	t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
 
 	return vA + (vB - vA) * t;
 }
 
-function ROCKETS::HELPERS::RangePercentage(a, b, t) {
+function ROCKETS::Helpers::RangePercentage(a, b, t) {
   return ((t - a) * 100) / (b - a);
 }
 
-function ROCKETS::HELPERS::RangeValue(a, b, t) {
+function ROCKETS::Helpers::RangeValue(a, b, t) {
   return (t * (b - a) / 100) + a;
 }
 
-function ROCKETS::HELPERS::ClampValue(value, min, max) {
+function ROCKETS::Helpers::ClampValue(value, min, max) {
   return (value < min) ? min : (value > max) ? max : value;
 }
 
-function ROCKETS::HELPERS::NormalizeVector(vector) {
+function ROCKETS::Helpers::NormalizeVector(vector) {
   local length = vector.Length();
   if (length == 0.0) return vector;
   return Vector(vector.x / length, vector.y / length, vector.z / length);
 }
 
 // https://developer.valvesoftware.com/wiki/Team_Fortress_2/Scripting/VScript_Examples#Creating_Bots_That_Use_the_Navmesh
-function ROCKETS::HELPERS::VectorAngles(forward) {
+function ROCKETS::Helpers::VectorAngles(forward) {
 	local yaw, pitch
 	if ( forward.y == 0.0 && forward.x == 0.0 )
 	{

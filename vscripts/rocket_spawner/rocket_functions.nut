@@ -1,7 +1,7 @@
 function ROCKETS::DefaultRocketThink(rocket) {
   local rocket_entity = rocket.Entity;
 
-  rocket_entity.SetForwardVector(ROCKETS.HELPERS.NormalizeVector(rocket_entity.GetAbsVelocity()));
+  rocket_entity.SetForwardVector(ROCKETS.Helpers.NormalizeVector(rocket_entity.GetAbsVelocity()));
 }
 
 function ROCKETS::HomingRocketThink(rocket) {
@@ -11,6 +11,7 @@ function ROCKETS::HomingRocketThink(rocket) {
   local target = rocket.Target;
   local speed = rocket.BaseSpeed;
   local follow_speed_multiplier = rocket.FollowSpeedMultiplier;
+  local collision_avoidance = rocket.CollisionAvoidance;
 
   if (!target.IsValid()) {
     rocket_entity.Kill();
@@ -21,7 +22,7 @@ function ROCKETS::HomingRocketThink(rocket) {
     local bounds = target.GetBoundingMaxs();
     local targetPosBase = Vector(center.x, center.y, center.z - (bounds.z / 2));
     local targetDistance = (targetPosBase - rocket_entity.GetOrigin()).Length();
-    local targetHeading = ROCKETS.HELPERS.NormalizeVector(target.GetAbsVelocity());
+    local targetHeading = ROCKETS.Helpers.NormalizeVector(target.GetAbsVelocity());
     local targetSpeed = target.GetAbsVelocity().Length();
     local speedDiff = targetSpeed - speed;
 
@@ -55,16 +56,18 @@ function ROCKETS::HomingRocketThink(rocket) {
       futurePosition = preferredTargetPosHigh;
     }
 
-    local percentage = ROCKETS.HELPERS.ClampValue(
-      ROCKETS.HELPERS.RangePercentage(ROCKETS.GLOBAL_ATTRS.MAX_TURNRATE_DISTANCE, ROCKETS.GLOBAL_ATTRS.MIN_TURNRATE_DISTANCE, targetDistance),
+    local percentage = ROCKETS.Helpers.ClampValue(
+      ROCKETS.Helpers.RangePercentage(ROCKETS.Globals.MAX_TURNRATE_DISTANCE, ROCKETS.Globals.MIN_TURNRATE_DISTANCE, targetDistance),
       0,
       100
     );
-    local turnrate = ROCKETS.HELPERS.RangeValue(ROCKETS.GLOBAL_ATTRS.MAX_TURNRATE, ROCKETS.GLOBAL_ATTRS.MIN_TURNRATE, percentage);
-    local target_direction = ROCKETS.HELPERS.CalculateDirectionToPosition(rocket_entity, futurePosition);
-    local final_direction = ROCKETS.HELPERS.LerpVectors(current_dir, target_direction, turnrate);
+    local turnrate = ROCKETS.Helpers.RangeValue(ROCKETS.Globals.MAX_TURNRATE, ROCKETS.Globals.MIN_TURNRATE, percentage);
+    local target_direction = ROCKETS.Helpers.CalculateDirectionToPosition(rocket_entity, futurePosition);
+    local final_direction = ROCKETS.Helpers.LerpVectors(current_dir, target_direction, turnrate);
 
-    final_direction = ROCKETS.RocketCollision(rocket_entity, final_direction, trace_output.hit);
+    if (collision_avoidance) {
+      final_direction = ROCKETS.RocketCollision(rocket_entity, final_direction, trace_output.hit);
+    }
 
     rocket_entity.SetAbsVelocity(final_direction.Scale(speed));
     rocket_entity.SetForwardVector(final_direction);
@@ -92,10 +95,10 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, not_check_fl
     scope.last_normal = normal;
 
     local percentage = trace_output.fraction * 100;
-    local turnrate = ROCKETS.HELPERS.RangeValue(ROCKETS.GLOBAL_ATTRS.MAX_TURNRATE, ROCKETS.GLOBAL_ATTRS.MIN_TURNRATE, percentage);
-    local target_direction = ROCKETS.HELPERS.NormalizeVector(current_dir + normal * 2);
+    local turnrate = ROCKETS.Helpers.RangeValue(ROCKETS.Globals.MAX_TURNRATE, ROCKETS.Globals.MIN_TURNRATE, percentage);
+    local target_direction = ROCKETS.Helpers.NormalizeVector(current_dir + normal * 2);
 
-    return ROCKETS.HELPERS.LerpVectors(current_dir, target_direction, turnrate);
+    return ROCKETS.Helpers.LerpVectors(current_dir, target_direction, turnrate);
   } else {
     if (scope.last_normal != null) {
       local last_normal_inverted = scope.last_normal * -1;
@@ -128,7 +131,7 @@ function ROCKETS::CreateExplosion(rocket, damage) {
   if (explosion_entity == null) return;
 
   NetProps.SetPropInt(explosion_entity, "m_iMagnitude", damage);
-  NetProps.SetPropInt(explosion_entity, "m_iRadiusOverride", ROCKETS.HELPERS.ClampValue(damage, 100, 1000));
+  NetProps.SetPropInt(explosion_entity, "m_iRadiusOverride", ROCKETS.Helpers.ClampValue(damage, 100, 1000));
 
   explosion_entity.Teleport(
     true, rocket.GetOrigin(),
