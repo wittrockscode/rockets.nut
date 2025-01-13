@@ -7,7 +7,7 @@ Prefab with all necessary entities and examples is included (`rockets_prefab.vmf
 ## Using the script
 
 To use the script in a map, add a `logic_script` entity with the Entity Scripts field set to `rockets.nut` and with the name field set to `script`.
-You can set defaults for rocket damage and rocket speed either by editing the `rockets.nut` file, or by adding a `logic_timer` entity with the following outputs to your map (add the attributes you want to set to the function parameters):
+You can set defaults for various values either by editing the `rockets.nut` file, or by adding a `logic_timer` entity with the following outputs to your map (add the attributes you want to set to the function parameters):
 ```
 | My Output | Target Entity | Target Input  | Parameter                                           | Delay |
 |-----------|---------------|---------------|------------------------------------------------------|-------|
