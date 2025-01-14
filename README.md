@@ -35,19 +35,19 @@ Attributes you can set:
 ## Funtions
 
 All functions have an optional argument `parameters`, where you can set the properties of the rocket by passing it as a table with any of these values:
-| Name | Type |
+| Name | Type | Description |
 |--|--|
-| speed | float |
-| damage | float |
-| homing | bool |
-| target | string |
-| scale | float |
-| limit | integer |
-| collision_avoidance | bool |
-| target_prediction | bool |
-| follow_speed_multiplier | float |
-| damage_everyone | bool |
-| explode | bool |
+| speed | float | Rocket speed |
+| damage | float | Rocket explosion damage/knockback |
+| homing | bool | Try to hit specified target |
+| target | string | The target of the rocket (Default `!activator`) |
+| scale | float | Model & Hitbox scale |
+| limit | integer | How many rockets can be spawned at this entity? (Only works with `SpawnRocketAtEntity`) |
+| collision_avoidance | bool | Avoid world geometry |
+| target_prediction | bool | Predict where the target will be at impact time |
+| follow_speed_multiplier | float | If the target is faster than rocket speed, speed up to x times target speed |
+| damage_everyone | bool | Damage all players in explosion range |
+| explode | bool | Explode on impact |
 
 You can set these by using this structure in your function call:
 ```
