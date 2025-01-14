@@ -42,10 +42,10 @@ All functions have an optional argument `parameters`, where you can set the prop
 | homing | bool | Try to hit specified target |
 | target | string | The target of the rocket (Default `!activator`) |
 | scale | float | Model & Hitbox scale |
-| limit | integer | How many rockets can be spawned at this entity? (Only works with `SpawnRocketAtEntity`) |
-| collision_avoidance | bool | Avoid world geometry |
-| target_prediction | bool | Predict where the target will be at impact time |
-| follow_speed_multiplier | float | If the target is faster than rocket speed, speed up to x times target speed |
+| limit | integer | How many rockets can be spawned at this entity before limit needs to be reset (Only works with `SpawnRocketAtEntity`) |
+| collision_avoidance | bool | Avoid world geometry (Only works with homing rockets) |
+| target_prediction | bool | Predict where the target will be at impact time (Only works with homing rockets) |
+| follow_speed_multiplier | float | If the target is faster than rocket speed, speed up to x times target speed (Only works with homing rockets) |
 | damage_everyone | bool | Damage all players in explosion range |
 | explode | bool | Explode on impact |
 
