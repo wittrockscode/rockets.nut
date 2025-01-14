@@ -2,7 +2,7 @@
 
 VScript for spawning rockets that collide with players.
 Place `vscripts` folder in `tf\scripts` folder to get started.
-Prefab with all necessary entities and examples is included (`rockets_prefab.vmf`).
+Prefab with all necessary entities and examples is included (`rockets_script_examples_prefab.vmf`).
 
 ## Using the script
 
