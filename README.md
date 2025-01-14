@@ -34,7 +34,7 @@ Attributes you can set:
 
 ## Funtions
 
-All functions have an optional argument `parameters`, where you can set the properties of the rocket by passing it as a table with any of these values:
+Both rocket spawning functions have an optional argument `parameters`, where you can set the properties of the rocket by passing it as a table with any of these values:
 | Name | Type | Description |
 |--|--|--|
 | speed | float | Rocket speed |
@@ -90,6 +90,41 @@ Add this output:
 |--|--|--|--|--|
 | OnStartTouch | script | RunScriptCode | ReplaceRocket() | 0.00 |
 You can use this in combination with a `trigger_push` to reflect rockets back to the player that damage him.
+
+### ResetLimit
+
+Resets the rocket limit for a specific entity, for the `!activator` (The player that triggered `SpawnRocketAtEntity`).
+#### Arguments
+| name | type | required |
+|--|--|--|
+| entity_name | string | yes |
+
+#### Usage
+Fire an output with this to reset the limit for an entity that is targetet with `SpawnRocketAtEntity`, in this example a `trigger_multiple`:
+| My Output | Target Entity | Target Input | Parameter | Delay |
+|--|--|--|--|--|
+| OnStartTouch | script | RunScriptCode | ResetLimit(`entity_name`) | 0.00 |
+
+### ResetLimits
+
+Resets the rocket limit for all entities, for the `!activator` (The player that triggers `SpawnRocketAtEntity`).
+#### Arguments
+None.
+#### Usage
+Fire an output with this to reset the limits for all entites targetet with `SpawnRocketAtEntity`, in this example a `trigger_multiple`:
+| My Output | Target Entity | Target Input | Parameter | Delay |
+|--|--|--|--|--|
+| OnStartTouch | script | RunScriptCode | ResetLimits() | 0.00 |
+
+### SetAttributes
+
+| name | type | required |
+|--|--|--|
+| parameters | table | yes |
+
+#### Usage
+
+Sets the global attributes, see [this section](#using-the-script).
 
 ## Filters
 To filter for normal rockets, add two `filter_activator_class`, a `filter_activator_name` and two `filter_multi`entities with these settings to you map:
