@@ -58,6 +58,8 @@ SpawnRocketAtEntity(`spawn_entity_name`, {target=`target_entity_name`,homing=tru
 Omitting the `target` parameter when spawning a homing rocket sets the `!activator` as the target.
 The `target` parameter on non-homing (and also homing) rockets defines who is damaged by it, if the `damage_everyone` parameter is not set to `true`.
 
+---
+
 ###  SpawnRocketAtEntity
 Spawns a rocket at the location of an entity.
 
@@ -75,6 +77,8 @@ Fill it with this output:
 |--|--|--|--|--|
 | OnPressed | script | RunScriptCode | SpawnRocketAtEntity(`rocket1`) | 0.00 |
 
+---
+
 ### ReplaceRocket
 
 Replaces a user fired rocket.
@@ -91,6 +95,8 @@ Add this output:
 | OnStartTouch | script | RunScriptCode | ReplaceRocket() | 0.00 |
 You can use this in combination with a `trigger_push` to reflect rockets back to the player that damage him.
 
+---
+
 ### ResetLimit
 
 Resets the rocket limit for a specific entity, for the `!activator` (The player that triggered `SpawnRocketAtEntity`).
@@ -105,6 +111,8 @@ Fire an output with this to reset the limit for an entity that is targetet with 
 |--|--|--|--|--|
 | OnStartTouch | script | RunScriptCode | ResetLimit(`entity_name`) | 0.00 |
 
+---
+
 ### ResetLimits
 
 Resets the rocket limit for all entities, for the `!activator` (The player that triggers `SpawnRocketAtEntity`).
@@ -116,6 +124,8 @@ Fire an output with this to reset the limits for all entites targetet with `Spaw
 |--|--|--|--|--|
 | OnStartTouch | script | RunScriptCode | ResetLimits() | 0.00 |
 
+---
+
 ### SetAttributes
 
 | name | type | required |
@@ -125,6 +135,8 @@ Fire an output with this to reset the limits for all entites targetet with `Spaw
 #### Usage
 
 Sets the global attributes, see [this section](#using-the-script).
+
+---
 
 ## Filters
 To filter for normal rockets, add two `filter_activator_class`, a `filter_activator_name` and two `filter_multi`entities with these settings to you map:
