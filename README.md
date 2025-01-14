@@ -30,28 +30,33 @@ Attributes you can set:
 | MIN_TURNRATE | 0.23 |
 | MAX_TURNRATE_DISTANCE | 50 |
 | MIN_TURNRATE_DISTANCE | 400 |
+| ONLY_DAMAGE_TARGET |true |
 
 ## Funtions
 
-All functions have an optional parameter `parameters`, where you can set the properties of the rocket:
+All functions have an optional argument `parameters`, where you can set the properties of the rocket by passing it as a table with any of these values:
 | Name | Type |
 |--|--|
 | speed | float |
 | damage | float |
-| explode | bool |
+| homing | bool |
 | target | string |
 | scale | float |
-| follow_speed_multiplier | float |
+| limit | integer |
 | collision_avoidance | bool |
 | target_prediction | bool |
+| follow_speed_multiplier | float |
+| damage_everyone | bool |
+| explode | bool |
 
 You can set these by using this structure in your function call:
 ```
-SpawnRocketAtEntityHoming(`spawn_entity_name`, {target=`target_entity_name`,damage=90.0,speed=1100.0,explode=false})
+SpawnRocketAtEntity(`spawn_entity_name`, {target=`target_entity_name`,homing=true,damage=90.0,speed=1100,collision_avoidance=false})
 ```
 *Note: To use strings in parameters, you have to use backticks (`).*
 
 Omitting the `target` parameter when spawning a homing rocket sets the `!activator` as the target.
+The `target` parameter on non-homing (and also homing) rockets defines who is damaged by it, if the `damage_everyone` parameter is not set to `true`.
 
 ###  SpawnRocketAtEntity
 Spawns a rocket at the location of an entity.
@@ -74,16 +79,6 @@ Fill it with this output:
 | OnPressed | script        | RunScriptCode | SpawnRocketAtEntity(`rocket1`)  | 0.00  |
 ```
 
-### SpawnRocketAtEntityHoming
-Same as `SpawnRocketAtEntity`, but the rockets are homing.
-#### Arguments
-```
-| name               | type   | required |
-|--------------------|--------|----------|
-| spawn_point_name   | string | yes      |
-| parameters         | table  | no       |
-```
-
 ### ReplaceRocket
 
 Replaces a user fired rocket.
@@ -103,15 +98,6 @@ Add this output:
 | OnStartTouch | script        | RunScriptCode | ReplaceRocket()  | 0.00  |
 ```
 You can use this in combination with a `trigger_push` to reflect rockets back to the player that damage him.
-
-### ReplaceRocketHoming
-Same as `ReplaceRocket`, but the rockets are homing.
-#### Arguments
-```
-| name               | type   | required |
-|--------------------|--------|----------|
-| parameters         | table  | no       |
-```
 
 ## Filters
 To filter for normal rockets, add two `filter_activator_class`, a `filter_activator_name` and two `filter_multi`entities with these settings to you map:
