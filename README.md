@@ -36,7 +36,7 @@ Attributes you can set:
 
 All functions have an optional argument `parameters`, where you can set the properties of the rocket by passing it as a table with any of these values:
 | Name | Type | Description |
-|--|--|
+|--|--|--|
 | speed | float | Rocket speed |
 | damage | float | Rocket explosion damage/knockback |
 | homing | bool | Try to hit specified target |
