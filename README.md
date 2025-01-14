@@ -112,6 +112,7 @@ To filter for normal rockets, add two `filter_activator_class`, a `filter_activa
 | Name | is_not_spawned |
 | Filter mode | Disallow ... |
 | Filter Name | spawned_rocket |
+
 The `Filter Name`will be red, this is normal.
 #### first `filter_multi`
 | Property Name | Value |
