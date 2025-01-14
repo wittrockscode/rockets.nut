@@ -134,22 +134,74 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, dont_check_f
   }
 }
 
-function ROCKETS::CreateExplosion(rocket, damage) {
+function ROCKETS::CreateExplosion(rocket_entity, rocket) {
+  local explosion_entity = ROCKETS.CreateExplosionEntity();
+
+  explosion_entity.Teleport(
+    true, rocket_entity.GetOrigin(),
+    false, QAngle(),
+    false, Vector()
+  );
+
+  explosion_entity.AcceptInput("Explode", "", rocket_entity, rocket_entity);
+  explosion_entity.Kill();
+
+  ROCKETS.CreateImpulse(rocket_entity, rocket);
+}
+
+function ROCKETS::CreateExplosionEntity() {
   local explosion_entity = SpawnEntityFromTable("env_explosion", {
     spawnflags = 2,
     rendermode = 5
   });
   if (explosion_entity == null) return;
 
-  NetProps.SetPropInt(explosion_entity, "m_iMagnitude", damage);
-  NetProps.SetPropInt(explosion_entity, "m_iRadiusOverride", ROCKETS.Helpers.ClampValue(damage, 100, 1000));
+  NetProps.SetPropInt(explosion_entity, "m_iMagnitude", ROCKETS.Globals.ROCKET_DAMAGE);
+  NetProps.SetPropFloat(explosion_entity, "m_flDamageForce", 0);
+  NetProps.SetPropInt(explosion_entity, "m_iRadiusOverride", 100);
 
-  explosion_entity.Teleport(
-    true, rocket.GetOrigin(),
-    false, QAngle(),
-    false, Vector()
-  );
+  return explosion_entity;
+}
 
-  explosion_entity.AcceptInput("Explode", "", rocket, rocket);
-  explosion_entity.Kill();
+function ROCKETS::CreateImpulse(rocket_entity, rocket)
+{
+  local damage = rocket.Damage;
+  local explosion_position = rocket_entity.GetOrigin() + Vector(0, 0, -50);
+
+  if (rocket.Damage <= 0) return;
+
+  if (rocket.DamageEveryone) {
+    for (local i = 1; i <= MaxClients().tointeger(); i++) {
+      player = PlayerInstanceFromIndex(i);
+      if (player == null) continue;
+
+      ROCKETS.ApplyEntityImpulse(player, explosion_position, damage);
+    }
+  } else {
+    local target = rocket.Target;
+    if (target == null) return;
+
+    ROCKETS.ApplyEntityImpulse(target, explosion_position, damage)
+  }
+}
+
+function ROCKETS::ApplyEntityImpulse(entity, impulse_origin, magnitude) {
+	local impulse_strength = 0.0;
+	local impulse_direction = null;
+  local entity_position = entity.GetOrigin();
+  local distance_to_explosion = (impulse_origin - entity_position).Length();
+  if (distance_to_explosion >= magnitude) return;
+
+  impulse_direction = entity_position - impulse_origin;
+  impulse_direction.Norm();
+
+  if (impulse_direction.z < 0.4) {
+    impulse_direction.z = 0.4;
+    impulse_direction.Norm();
+  }
+
+  if (distance_to_explosion < (magnitude / 2)) impulse_strength = magnitude * 3;
+  else impulse_strength = (1.0 - ((2 * distance_to_explosion - magnitude) / magnitude)) * magnitude * 3;
+
+  entity.ApplyAbsVelocityImpulse(impulse_direction * impulse_strength);
 }

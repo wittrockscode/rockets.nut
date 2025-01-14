@@ -14,6 +14,7 @@ ROCKETS.Globals <- {
   MIN_TURNRATE                    = 0.23,
   MAX_TURNRATE_DISTANCE           = 50,
   MIN_TURNRATE_DISTANCE           = 400,
+  ONLY_DAMAGE_TARGET              = true,
 };
 ROCKETS.RocketArgs <- {
   position                = null,
@@ -26,6 +27,9 @@ ROCKETS.RocketArgs <- {
   follow_speed_multiplier = ROCKETS.Globals.ROCKET_FOLLOW_SPEED_MULTIPLIER,
   collision_avoidance     = ROCKETS.Globals.ROCKET_COLLISION_AVOIDANCE,
   target_prediction       = ROCKETS.Globals.ROCKET_TARGET_PREDICTION,
+  limit                   = -1,
+  homing                  = false,
+  damage_everyone         = !ROCKETS.Globals.ONLY_DAMAGE_TARGET,
 };
 
 IncludeScript("rocket_spawner/helper.nut");

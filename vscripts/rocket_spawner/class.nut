@@ -10,6 +10,8 @@ class ROCKETS.SpawnedRocket {
   FollowSpeedMultiplier   = null; // float
   CollisionAvoidance      = null; // bool
   TargetPrediction        = null; // bool
+  Homing                  = null; // bool
+  DamageEveryone          = null; // bool
 
   constructor(args) {
     this.Entity                 = Entities.CreateByClassname("tf_projectile_rocket");
@@ -23,6 +25,8 @@ class ROCKETS.SpawnedRocket {
     this.FollowSpeedMultiplier  = args.follow_speed_multiplier;
     this.CollisionAvoidance     = args.collision_avoidance;
     this.TargetPrediction       = args.target_prediction;
+    this.Homing                 = args.homing;
+    this.DamageEveryone         = args.damage_everyone;
 
     args = null;
 
@@ -50,12 +54,12 @@ class ROCKETS.SpawnedRocket {
     AddCustomParticle();
 
     if (this.Explode) {
-      SetDestroyCallback(this.Entity, this.Damage, function(damage) {
-        ROCKETS.CreateExplosion(self, damage);
+      SetDestroyCallback(this, function(entity, rocket) {
+        ROCKETS.CreateExplosion(entity, rocket);
       });
     }
 
-    if (this.Target) {
+    if (this.Homing) {
       ROCKETS.Helpers.AddThinkFunc(this.Entity, this, "HomingRocketThink", function(rocket) {
         ROCKETS.HomingRocketThink(rocket);
       }, -1);
@@ -104,7 +108,8 @@ class ROCKETS.SpawnedRocket {
   }
 
   // https://developer.valvesoftware.com/wiki/Team_Fortress_2/Scripting/Script_Functions#Hooks_2
-  function SetDestroyCallback(entity, damage, callback){
+  function SetDestroyCallback(rocket, callback){
+    local entity = rocket.Entity;
     entity.ValidateScriptScope()
     local scope = entity.GetScriptScope()
     scope.setdelegate({}.setdelegate({
@@ -123,7 +128,7 @@ class ROCKETS.SpawnedRocket {
             entity = EntIndexToHScript(index)
             local scope = entity.GetScriptScope()
             scope.self <- entity
-            callback.pcall(scope, damage)
+            callback.pcall(scope, entity, rocket)
           }
           delete parent[k]
         }
