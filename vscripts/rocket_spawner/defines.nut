@@ -9,12 +9,15 @@ ROCKETS.Globals <- {
   ROCKET_BOUNDS_P                 = Vector(18.3205, 3.417, 3.417),
   ROCKET_FOLLOW_SPEED_MULTIPLIER  = 2,
   ROCKET_EXPLODE                  = true,
-  ROCKET_MODEL_SCALE              = 1.0,
+  ROCKET_SCALE                    = 1.0,
   MAX_TURNRATE                    = 0.7,
   MIN_TURNRATE                    = 0.23,
   MAX_TURNRATE_DISTANCE           = 50,
   MIN_TURNRATE_DISTANCE           = 400,
-  ONLY_DAMAGE_TARGET              = true,
+  ROCKET_ONLY_DAMAGE_TARGET       = true,
+  ROCKET_HOMING                   = false,
+  ROCKET_TARGET                   = null,
+  ROCKET_LIMIT                    = -1,
 };
 ROCKETS.RocketArgs <- {
   position                = null,
@@ -22,14 +25,14 @@ ROCKETS.RocketArgs <- {
   speed                   = ROCKETS.Globals.ROCKET_SPEED,
   damage                  = ROCKETS.Globals.ROCKET_DAMAGE,
   explode                 = ROCKETS.Globals.ROCKET_EXPLODE,
-  target                  = null,
-  scale                   = ROCKETS.Globals.ROCKET_MODEL_SCALE,
+  target                  = ROCKETS.Globals.ROCKET_TARGET,
+  scale                   = ROCKETS.Globals.ROCKET_SCALE,
   follow_speed_multiplier = ROCKETS.Globals.ROCKET_FOLLOW_SPEED_MULTIPLIER,
   collision_avoidance     = ROCKETS.Globals.ROCKET_COLLISION_AVOIDANCE,
   target_prediction       = ROCKETS.Globals.ROCKET_TARGET_PREDICTION,
-  limit                   = -1,
-  homing                  = false,
-  damage_everyone         = !ROCKETS.Globals.ONLY_DAMAGE_TARGET,
+  limit                   = ROCKETS.Globals.ROCKET_LIMIT,
+  homing                  = ROCKETS.Globals.ROCKET_HOMING,
+  damage_everyone         = !ROCKETS.Globals.ROCKET_ONLY_DAMAGE_TARGET,
 };
 
 IncludeScript("rocket_spawner/helper.nut");
