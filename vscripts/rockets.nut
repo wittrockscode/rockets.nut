@@ -63,19 +63,6 @@ function ResetLimits() {
   scope.rockets_limit <- {};
 }
 
-function SetAttributes(args_table = {}) {
-  foreach (key, value in args_table) {
-    local key = key.toupper();
-    if (key in ROCKETS.Globals) {
-      ROCKETS.Globals[key] = value;
-      printl(key + " set to " + value);
-    }
-  }
-
-  activator.AcceptInput("Disable", "", activator, activator);
-  printl("All attributes set");
-}
-
 function Precache() {
   PrecacheModel("models/weapons/w_models/w_rocket.mdl");
   PrecacheEntityFromTable({
