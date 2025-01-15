@@ -30,7 +30,7 @@ You can set these by using this structure in your function call:
 ```
 SpawnRocketAtEntity(`spawn_entity_name`, {target=`target_entity_name`,homing=true,damage=90.0,speed=1100,collision_avoidance=false})
 ```
-*Note: To use strings in parameters, you have to use backticks (`).*
+*Note: To use strings in parameters, you have to use backticks (`). Do NOT use double quotation marks (") as this will corrup your .vmf file.*
 
 Omitting the `target` parameter when spawning a homing rocket sets the `!activator` as the target.
 The `target` parameter on non-homing (and also homing) rockets defines which entity or player is damaged by it, if the `damage_everyone` parameter is not set to `true`.
@@ -70,6 +70,7 @@ Add this output:
 | My Output | Target Entity | Target Input | Parameter | Delay |
 |--|--|--|--|--|
 | OnStartTouch | script | RunScriptCode | ReplaceRocket() | 0.00 |
+
 You can use this in combination with a `trigger_push` to reflect rockets back to the player that damage him.
 
 ---
