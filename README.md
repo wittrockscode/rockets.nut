@@ -7,12 +7,11 @@ Prefab with all necessary entities and examples is included (`rockets_script_exa
 ## Using the script
 
 To use the script in a map, add a `logic_script` entity with the Entity Scripts field set to `rockets.nut` and with the name field set to `script`.
-You can set defaults for various values either by editing the `rockets.nut` file, or by adding a `logic_timer` entity with the following outputs to your map (add the attributes you want to set to the function parameters):
-```
-| My Output | Target Entity | Target Input  | Parameter                                           | Delay |
-|-----------|---------------|---------------|------------------------------------------------------|-------|
-| OnTimer   | script        | RunScriptCode | SetAttributes({rocket_damage=90,rocket_speed=1100})  | 0.00  |
-```
+You can set defaults for various values either by editing the `rocket_spawner/defines.nut` file, or by adding a `logic_timer` entity with the following outputs to your map (add the attributes you want to set to the function parameters):
+| My Output | Target Entity | Target Input | Parameter | Delay |
+|--|--|--|--|--|
+| OnTimer   | script | RunScriptCode | SetAttributes({rocket_damage=90,rocket_speed=1100}) | 0.00 |
+
 Rockets will use these values if you don't specify them in the spawn functions.
 Attributes you can set:
 
