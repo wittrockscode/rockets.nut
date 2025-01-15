@@ -7,33 +7,7 @@ Prefab with all necessary entities and examples is included (`rockets_script_exa
 ## Using the script
 
 To use the script in a map, add a `logic_script` entity with the Entity Scripts field set to `rockets.nut` and with the name field set to `script`.
-You can set defaults for various values either by editing the `rocket_spawner/defines.nut` file, or by adding a `logic_timer` entity with the following outputs to your map (add the attributes you want to set to the function parameters):
-| My Output | Target Entity | Target Input | Parameter | Delay |
-|--|--|--|--|--|
-| OnTimer   | script | RunScriptCode | SetAttributes({rocket_damage=90,rocket_speed=1100}) | 0.00 |
-
-Rockets will use these values if you don't specify them in the spawn functions.
-Attributes you can set:
-
-| Name | Default |
-|--|--|
-| ROCKET_SPEED  | 1100 |
-| ROCKET_DAMAGE   | 90.0 |
-| ROCKET_HOMING | false |
-| ROCKET_TARGET | null |
-| ROCKET_SCALE | 1.0 |
-| ROCKET_LIMIT | -1 |
-| ROCKET_COLLISION_AVOIDANCE | true |
-| ROCKET_TARGET_PREDICTION | true |
-| ROCKET_FOLLOW_SPEED_MULTIPLIER | 2 |
-| ROCKET_ONLY_DAMAGE_TARGET |true |
-| ROCKET_EXPLODE | true |
-| PARTICLE_SYSTEM_NAME | "critical_rocket_blue" |
-| ROCKET_BOUNDS_P | Vector(18.3205, 3.417, 3.417) |
-| MAX_TURNRATE | 0.7 |
-| MIN_TURNRATE | 0.23 |
-| MAX_TURNRATE_DISTANCE | 50 |
-| MIN_TURNRATE_DISTANCE | 400 |
+You can set defaults for various values for rockets by editing the `ROCKETS.Globals` table in the `rocket_spawner/defines.nut`file.
 
 ## Funtions
 
@@ -46,9 +20,9 @@ Both rocket spawning functions have an optional argument `parameters`, where you
 | target | string | The target of the rocket (Default `!activator`) |
 | scale | float | Model & Hitbox scale |
 | limit | integer | How many rockets can be spawned at this entity before limit needs to be reset (Only works with `SpawnRocketAtEntity`) |
-| collision_avoidance | bool | Avoid world geometry (Only works with homing rockets) |
-| target_prediction | bool | Predict where the target will be at impact time (Only works with homing rockets) |
-| follow_speed_multiplier | float | If the target is faster than rocket speed, speed up to x times target speed (Only works with homing rockets) |
+| collision_avoidance | bool | Avoid world geometry *(Only works with homing rockets)* |
+| target_prediction | bool | Predict where the target will be at impact time *(Only works with homing rockets)* |
+| follow_speed_multiplier | float | If the target is faster than rocket speed, speed up to x times target speed *(Only works with homing rockets)* |
 | damage_everyone | bool | Damage all players in explosion range |
 | explode | bool | Explode on impact |
 
@@ -59,7 +33,7 @@ SpawnRocketAtEntity(`spawn_entity_name`, {target=`target_entity_name`,homing=tru
 *Note: To use strings in parameters, you have to use backticks (`).*
 
 Omitting the `target` parameter when spawning a homing rocket sets the `!activator` as the target.
-The `target` parameter on non-homing (and also homing) rockets defines who is damaged by it, if the `damage_everyone` parameter is not set to `true`.
+The `target` parameter on non-homing (and also homing) rockets defines which entity or player is damaged by it, if the `damage_everyone` parameter is not set to `true`.
 
 ---
 
@@ -126,18 +100,6 @@ Fire an output with this to reset the limits for all entites targetet with `Spaw
 | My Output | Target Entity | Target Input | Parameter | Delay |
 |--|--|--|--|--|
 | OnStartTouch | script | RunScriptCode | ResetLimits() | 0.00 |
-
----
-
-### SetAttributes
-
-| name | type | required |
-|--|--|--|
-| parameters | table | yes |
-
-#### Usage
-
-Sets the global attributes, see [this section](#using-the-script).
 
 ---
 
