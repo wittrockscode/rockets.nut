@@ -107,7 +107,7 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, dont_check_f
 
     scope.last_normal = normal;
 
-    local percentage = trace_output.fraction * 100;
+    local percentage = 100 - (trace_output.fraction * 100);
     local turnrate = ROCKETS.Helpers.RangeValue(ROCKETS.Globals.MAX_TURNRATE, ROCKETS.Globals.MIN_TURNRATE, percentage);
     local target_direction = ROCKETS.Helpers.NormalizeVector(current_dir + normal);
 
@@ -128,7 +128,7 @@ function ROCKETS::RocketCollision(rocket_entity, current_direction, dont_check_f
         scope.last_normal = null
         return current_direction;
       } else {
-        return current_dir;
+        return current_dir + scope.last_normal * 0.01;
       }
     } else {
       return current_direction;
